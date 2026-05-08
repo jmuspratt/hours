@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node *)",
+      "Bash(node scripts/*)",
+      "Bash(python3 *)",
+      "Bash(python *)",
+      "Bash(npx *)",
+      "Bash(git *)",
+      "Bash(ls *)",
+      "Bash(find *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(cat *)",
+      "Bash(chmod *)",
+      "Bash(curl *)",
+      "Bash(jq *)",
+      "Bash(open *)",
+      "Bash(touch *)"
+    ]
+  }
+}

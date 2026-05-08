@@ -1,0 +1,5 @@
+[
+  { "id": "robbins-library", "name": "Robbins Library", "category": "library", "placeId": "ChIJ0Sp5DFB244kRSFAVtDem4bM" },
+  { "id": "fox-library", "name": "Fox Library", "category": "library", "placeId": "ChIJtwszNP5244kRMrl0wQ8VL9k" },
+  { "id": "capitol-theatre", "name": "Capitol Theatre", "category": "shop", "placeId": "ChIJoV9xuP9244kRT8loiM-PpUQ" }
+]
