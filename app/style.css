@@ -234,10 +234,17 @@ html, body {
   font-style: italic;
 }
 
-/* Call button */
-.biz-call {
-  display: inline-block;
+/* Contact links (phone + maps) */
+.biz-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   margin-top: 6px;
+}
+
+.biz-call,
+.biz-maps {
+  display: inline-block;
   font-family: inherit;
   font-size: 12px;
   font-weight: 500;
@@ -252,7 +259,8 @@ html, body {
 }
 
 @media (prefers-color-scheme: dark) {
-  .biz-call {
+  .biz-call,
+  .biz-maps {
     color: #777;
     border-color: #444;
   }

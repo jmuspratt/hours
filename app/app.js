@@ -131,6 +131,12 @@ function buildRow(business, now) {
   const phoneHTML = business.phone
     ? `<a class="biz-call" href="tel:${business.phone}">${business.phone}</a>`
     : '';
+  const mapsURL = business.lat != null
+    ? `https://maps.apple.com/?ll=${business.lat},${business.lng}&q=${encodeURIComponent(business.name)}`
+    : null;
+  const mapsHTML = (mapsURL && business.address)
+    ? `<a class="biz-maps" href="${mapsURL}" target="_blank">${business.address}</a>`
+    : '';
 
   const li = document.createElement('li');
   li.className = 'biz-row';
@@ -143,7 +149,7 @@ function buildRow(business, now) {
       </div>
       <div class="biz-accordion">
         ${scheduleHTML}
-        ${phoneHTML}
+        <div class="biz-contact">${phoneHTML}${mapsHTML}</div>
       </div>
     </div>`;
 
