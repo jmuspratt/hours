@@ -41,7 +41,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:03.786Z"
+    "lastUpdated": "2026-05-12T11:08:30.046Z"
   },
   {
     "id": "fox-library",
@@ -79,7 +79,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:04.155Z"
+    "lastUpdated": "2026-05-12T11:08:30.331Z"
   },
   {
     "id": "book-rack",
@@ -123,7 +123,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:04.438Z"
+    "lastUpdated": "2026-05-12T11:08:30.609Z"
   },
   {
     "id": "tryst",
@@ -167,7 +167,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:04.725Z"
+    "lastUpdated": "2026-05-12T11:08:30.895Z"
   },
   {
     "id": "kickstand",
@@ -208,7 +208,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:05.010Z"
+    "lastUpdated": "2026-05-12T11:08:31.190Z"
   },
   {
     "id": "maxima",
@@ -252,7 +252,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:05.296Z"
+    "lastUpdated": "2026-05-12T11:08:31.479Z"
   },
   {
     "id": "lavictoria",
@@ -293,7 +293,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:05.654Z"
+    "lastUpdated": "2026-05-12T11:08:31.827Z"
   },
   {
     "id": "breadboard",
@@ -325,7 +325,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:05.933Z"
+    "lastUpdated": "2026-05-12T11:08:32.105Z"
   },
   {
     "id": "arlington-hair-salon",
@@ -333,9 +333,9 @@
     "category": "services",
     "placeId": "ChIJg7Algfh244kRTyXkjfJ5CFs",
     "phone": "(781) 646-6425",
-    "address": "205 Broadway, Arlington",
-    "lat": 42.412127399999996,
-    "lng": -71.1445419,
+    "address": "205 Broadway #207, Arlington",
+    "lat": 42.4120718,
+    "lng": -71.1445155,
     "hours": {
       "regular": {
         "sun": null,
@@ -363,7 +363,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:06.254Z"
+    "lastUpdated": "2026-05-12T11:08:32.412Z"
   },
   {
     "id": "helenas",
@@ -407,7 +407,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:06.540Z"
+    "lastUpdated": "2026-05-12T11:08:32.697Z"
   },
   {
     "id": "punjab",
@@ -448,7 +448,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:06.825Z"
+    "lastUpdated": "2026-05-12T11:08:32.990Z"
   },
   {
     "id": "acitron",
@@ -492,7 +492,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:07.105Z"
+    "lastUpdated": "2026-05-12T11:08:33.282Z"
   },
   {
     "id": "elis",
@@ -536,7 +536,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:07.385Z"
+    "lastUpdated": "2026-05-12T11:08:33.574Z"
   },
   {
     "id": "wholefoods-arlington",
@@ -580,7 +580,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:07.750Z"
+    "lastUpdated": "2026-05-12T11:08:33.914Z"
   },
   {
     "id": "wholefoods-medford",
@@ -624,7 +624,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:08.041Z"
+    "lastUpdated": "2026-05-12T11:08:34.194Z"
   },
   {
     "id": "starmarket-belmont",
@@ -668,7 +668,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:08.347Z"
+    "lastUpdated": "2026-05-12T11:08:34.504Z"
   },
   {
     "id": "quebrada",
@@ -712,7 +712,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:08.632Z"
+    "lastUpdated": "2026-05-12T11:08:34.790Z"
   },
   {
     "id": "shattuck",
@@ -756,7 +756,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:08.921Z"
+    "lastUpdated": "2026-05-12T11:08:35.070Z"
   },
   {
     "id": "yoshis",
@@ -797,7 +797,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:09.206Z"
+    "lastUpdated": "2026-05-12T11:08:35.346Z"
   },
   {
     "id": "scoop",
@@ -838,7 +838,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:09.492Z"
+    "lastUpdated": "2026-05-12T11:08:35.620Z"
   },
   {
     "id": "tatte-arlington",
@@ -882,7 +882,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:09.927Z"
+    "lastUpdated": "2026-05-12T11:08:35.901Z"
   },
   {
     "id": "belmont-books",
@@ -926,7 +926,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:10.220Z"
+    "lastUpdated": "2026-05-12T11:08:36.178Z"
   },
   {
     "id": "bicycle-belle",
@@ -964,7 +964,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:10.505Z"
+    "lastUpdated": "2026-05-12T11:08:36.536Z"
   },
   {
     "id": "belmont-wheelworks",
@@ -1008,7 +1008,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:10.797Z"
+    "lastUpdated": "2026-05-12T11:08:36.815Z"
   },
   {
     "id": "ace-wheelworks",
@@ -1052,6 +1052,182 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-09T15:28:11.078Z"
+    "lastUpdated": "2026-05-12T11:08:37.135Z"
+  },
+  {
+    "id": "walgreens-store",
+    "name": "Walgreens (Store)",
+    "category": "pharmacy",
+    "placeId": "ChIJdegK1VV244kRXKOh0Ap4imY",
+    "phone": "(781) 643-4112",
+    "address": "324 Massachusetts Ave, Arlington",
+    "lat": 42.4252883,
+    "lng": -71.18740140000001,
+    "hours": {
+      "regular": {
+        "sun": {
+          "open": "07:00",
+          "close": "23:00"
+        },
+        "mon": {
+          "open": "07:00",
+          "close": "23:00"
+        },
+        "tue": {
+          "open": "07:00",
+          "close": "23:00"
+        },
+        "wed": {
+          "open": "07:00",
+          "close": "23:00"
+        },
+        "thu": {
+          "open": "07:00",
+          "close": "23:00"
+        },
+        "fri": {
+          "open": "07:00",
+          "close": "23:00"
+        },
+        "sat": {
+          "open": "07:00",
+          "close": "23:00"
+        }
+      },
+      "overrides": []
+    },
+    "lastUpdated": "2026-05-12T11:08:37.414Z"
+  },
+  {
+    "id": "walgreens-pharmacy",
+    "name": "Walgreens Pharmacy",
+    "category": "pharmacy",
+    "placeId": "ChIJ_Y_RRDt344kRB_XNtAA6ec0",
+    "phone": "(781) 643-4112",
+    "address": "324 Massachusetts Ave, Arlington",
+    "lat": 42.4100132,
+    "lng": -71.1486304,
+    "hours": {
+      "regular": {
+        "sun": {
+          "open": "14:00",
+          "close": "18:00"
+        },
+        "mon": {
+          "open": "14:00",
+          "close": "21:00"
+        },
+        "tue": {
+          "open": "14:00",
+          "close": "21:00"
+        },
+        "wed": {
+          "open": "14:00",
+          "close": "21:00"
+        },
+        "thu": {
+          "open": "14:00",
+          "close": "21:00"
+        },
+        "fri": {
+          "open": "14:00",
+          "close": "21:00"
+        },
+        "sat": {
+          "open": "14:00",
+          "close": "18:00"
+        }
+      },
+      "overrides": []
+    },
+    "lastUpdated": "2026-05-12T11:08:37.692Z"
+  },
+  {
+    "id": "CVS",
+    "name": "CVS (Store)",
+    "category": "pharmacy",
+    "placeId": "ChIJc2KtfE9244kRd6OqiX7ucsc",
+    "phone": "(781) 643-4272",
+    "address": "833 Massachusetts Ave, Arlington",
+    "lat": 42.417142399999996,
+    "lng": -71.160361,
+    "hours": {
+      "regular": {
+        "sun": {
+          "open": "07:00",
+          "close": "22:00"
+        },
+        "mon": {
+          "open": "07:00",
+          "close": "22:00"
+        },
+        "tue": {
+          "open": "07:00",
+          "close": "22:00"
+        },
+        "wed": {
+          "open": "07:00",
+          "close": "22:00"
+        },
+        "thu": {
+          "open": "07:00",
+          "close": "22:00"
+        },
+        "fri": {
+          "open": "07:00",
+          "close": "22:00"
+        },
+        "sat": {
+          "open": "07:00",
+          "close": "22:00"
+        }
+      },
+      "overrides": []
+    },
+    "lastUpdated": "2026-05-12T11:08:37.975Z"
+  },
+  {
+    "id": "cvs-pharmacy",
+    "name": "CVS Pharmacy",
+    "category": "pharmacy",
+    "placeId": "ChIJwVUXDrN344kRwnECSioprLk",
+    "phone": "(781) 643-4272",
+    "address": "833 Massachusetts Ave, Arlington",
+    "lat": 42.4169623,
+    "lng": -71.1605281,
+    "hours": {
+      "regular": {
+        "sun": {
+          "open": "14:00",
+          "close": "20:00"
+        },
+        "mon": {
+          "open": "14:00",
+          "close": "21:00"
+        },
+        "tue": {
+          "open": "14:00",
+          "close": "21:00"
+        },
+        "wed": {
+          "open": "14:00",
+          "close": "21:00"
+        },
+        "thu": {
+          "open": "14:00",
+          "close": "21:00"
+        },
+        "fri": {
+          "open": "14:00",
+          "close": "21:00"
+        },
+        "sat": {
+          "open": "14:00",
+          "close": "20:00"
+        }
+      },
+      "overrides": []
+    },
+    "lastUpdated": "2026-05-12T11:08:38.262Z"
   }
 ]

@@ -23,6 +23,10 @@
   { "id": "belmont-books", "name": "Belmont Books", "category": "books", "placeId": "ChIJM2XLKsR344kR5Sa24czy2oM" },
   { "id": "bicycle-belle", "name": "Bicycle Belle", "category": "bikes", "placeId": "ChIJwwR0HTx344kRTnlYEX0FyDk" },
   { "id": "belmont-wheelworks", "name": "Belmont Wheelworks", "category": "bikes", "placeId": "ChIJ0b-JS-J344kR0z5ZpgbqKyY" },
-  { "id": "ace-wheelworks", "name": "Ace Wheelworks Somerville", "category": "bikes", "placeId": "ChIJndSl0yJ344kRJOosmZcUL7M" }
+  { "id": "ace-wheelworks", "name": "Ace Wheelworks Somerville", "category": "bikes", "placeId": "ChIJndSl0yJ344kRJOosmZcUL7M" },
+  { "id": "walgreens-store", "name": "Walgreens (Store)", "category": "pharmacy", "placeId": "ChIJdegK1VV244kRXKOh0Ap4imY" },
+  { "id": "walgreens-pharmacy", "name": "Walgreens Pharmacy", "category": "pharmacy", "placeId": "ChIJ_Y_RRDt344kRB_XNtAA6ec0" },
+  { "id": "CVS", "name": "CVS (Store)", "category": "pharmacy", "placeId": "ChIJc2KtfE9244kRd6OqiX7ucsc" },
+  { "id": "cvs-pharmacy", "name": "CVS Pharmacy", "category": "pharmacy", "placeId": "ChIJwVUXDrN344kRwnECSioprLk" }  
 ]
 
