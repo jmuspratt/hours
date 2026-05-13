@@ -1,3 +1,8 @@
 {
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "search": "node scripts/search-server.js",
+    "refresh": "node scripts/refresh.js",
+    "deploy": "bash scripts/deploy.sh"
+  }
 }

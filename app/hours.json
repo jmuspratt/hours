@@ -41,7 +41,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:30.046Z"
+    "lastUpdated": "2026-05-13T13:53:32.040Z"
   },
   {
     "id": "fox-library",
@@ -79,7 +79,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:30.331Z"
+    "lastUpdated": "2026-05-13T13:53:32.353Z"
   },
   {
     "id": "book-rack",
@@ -123,7 +123,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:30.609Z"
+    "lastUpdated": "2026-05-13T13:53:32.663Z"
   },
   {
     "id": "tryst",
@@ -167,7 +167,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:30.895Z"
+    "lastUpdated": "2026-05-13T13:53:32.973Z"
   },
   {
     "id": "kickstand",
@@ -208,7 +208,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:31.190Z"
+    "lastUpdated": "2026-05-13T13:53:33.270Z"
   },
   {
     "id": "maxima",
@@ -252,7 +252,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:31.479Z"
+    "lastUpdated": "2026-05-13T13:53:33.578Z"
   },
   {
     "id": "lavictoria",
@@ -293,7 +293,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:31.827Z"
+    "lastUpdated": "2026-05-13T13:53:33.887Z"
   },
   {
     "id": "breadboard",
@@ -325,12 +325,12 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:32.105Z"
+    "lastUpdated": "2026-05-13T13:53:34.198Z"
   },
   {
     "id": "arlington-hair-salon",
     "name": "Arlington Hair Salon",
-    "category": "services",
+    "category": "health",
     "placeId": "ChIJg7Algfh244kRTyXkjfJ5CFs",
     "phone": "(781) 646-6425",
     "address": "205 Broadway #207, Arlington",
@@ -363,7 +363,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:32.412Z"
+    "lastUpdated": "2026-05-13T13:53:34.487Z"
   },
   {
     "id": "helenas",
@@ -407,7 +407,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:32.697Z"
+    "lastUpdated": "2026-05-13T13:53:34.784Z"
   },
   {
     "id": "punjab",
@@ -448,7 +448,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:32.990Z"
+    "lastUpdated": "2026-05-13T13:53:35.083Z"
   },
   {
     "id": "acitron",
@@ -492,7 +492,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:33.282Z"
+    "lastUpdated": "2026-05-13T13:53:35.386Z"
   },
   {
     "id": "elis",
@@ -536,7 +536,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:33.574Z"
+    "lastUpdated": "2026-05-13T13:53:35.684Z"
   },
   {
     "id": "wholefoods-arlington",
@@ -580,7 +580,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:33.914Z"
+    "lastUpdated": "2026-05-13T13:53:35.991Z"
   },
   {
     "id": "wholefoods-medford",
@@ -624,7 +624,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:34.194Z"
+    "lastUpdated": "2026-05-13T13:53:36.292Z"
   },
   {
     "id": "starmarket-belmont",
@@ -668,7 +668,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:34.504Z"
+    "lastUpdated": "2026-05-13T13:53:36.594Z"
   },
   {
     "id": "quebrada",
@@ -712,7 +712,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:34.790Z"
+    "lastUpdated": "2026-05-13T13:53:36.905Z"
   },
   {
     "id": "shattuck",
@@ -756,7 +756,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:35.070Z"
+    "lastUpdated": "2026-05-13T13:53:37.215Z"
   },
   {
     "id": "yoshis",
@@ -797,7 +797,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:35.346Z"
+    "lastUpdated": "2026-05-13T13:53:37.511Z"
   },
   {
     "id": "scoop",
@@ -838,7 +838,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:35.620Z"
+    "lastUpdated": "2026-05-13T13:53:37.785Z"
   },
   {
     "id": "tatte-arlington",
@@ -882,7 +882,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:35.901Z"
+    "lastUpdated": "2026-05-13T13:53:38.064Z"
   },
   {
     "id": "belmont-books",
@@ -926,7 +926,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:36.178Z"
+    "lastUpdated": "2026-05-13T13:53:38.346Z"
   },
   {
     "id": "bicycle-belle",
@@ -962,9 +962,17 @@
           "close": "17:00"
         }
       },
-      "overrides": []
+      "overrides": [
+        {
+          "date": "2026-05-16",
+          "hours": {
+            "open": "10:00",
+            "close": "14:00"
+          }
+        }
+      ]
     },
-    "lastUpdated": "2026-05-12T11:08:36.536Z"
+    "lastUpdated": "2026-05-13T13:53:38.617Z"
   },
   {
     "id": "belmont-wheelworks",
@@ -1008,7 +1016,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:36.815Z"
+    "lastUpdated": "2026-05-13T13:53:38.895Z"
   },
   {
     "id": "ace-wheelworks",
@@ -1052,12 +1060,12 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:37.135Z"
+    "lastUpdated": "2026-05-13T13:53:39.173Z"
   },
   {
     "id": "walgreens-store",
     "name": "Walgreens (Store)",
-    "category": "pharmacy",
+    "category": "health",
     "placeId": "ChIJdegK1VV244kRXKOh0Ap4imY",
     "phone": "(781) 643-4112",
     "address": "324 Massachusetts Ave, Arlington",
@@ -1096,12 +1104,12 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:37.414Z"
+    "lastUpdated": "2026-05-13T13:53:39.445Z"
   },
   {
     "id": "walgreens-pharmacy",
     "name": "Walgreens Pharmacy",
-    "category": "pharmacy",
+    "category": "health",
     "placeId": "ChIJ_Y_RRDt344kRB_XNtAA6ec0",
     "phone": "(781) 643-4112",
     "address": "324 Massachusetts Ave, Arlington",
@@ -1140,12 +1148,12 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:37.692Z"
+    "lastUpdated": "2026-05-13T13:53:39.722Z"
   },
   {
     "id": "CVS",
     "name": "CVS (Store)",
-    "category": "pharmacy",
+    "category": "health",
     "placeId": "ChIJc2KtfE9244kRd6OqiX7ucsc",
     "phone": "(781) 643-4272",
     "address": "833 Massachusetts Ave, Arlington",
@@ -1184,12 +1192,12 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:37.975Z"
+    "lastUpdated": "2026-05-13T13:53:40.005Z"
   },
   {
     "id": "cvs-pharmacy",
     "name": "CVS Pharmacy",
-    "category": "pharmacy",
+    "category": "health",
     "placeId": "ChIJwVUXDrN344kRwnECSioprLk",
     "phone": "(781) 643-4272",
     "address": "833 Massachusetts Ave, Arlington",
@@ -1228,6 +1236,44 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-05-12T11:08:38.262Z"
+    "lastUpdated": "2026-05-13T13:53:40.280Z"
+  },
+  {
+    "id": "my-eye-dr",
+    "name": "MyEyeDr.",
+    "category": "health",
+    "placeId": "ChIJ9S_EX6J344kR78eBvxal64Q",
+    "phone": "(781) 488-0094",
+    "address": "1328 Massachusetts Ave, Arlington",
+    "lat": 42.42417460000001,
+    "lng": -71.1828845,
+    "hours": {
+      "regular": {
+        "sun": null,
+        "mon": {
+          "open": "08:00",
+          "close": "17:00"
+        },
+        "tue": {
+          "open": "08:00",
+          "close": "17:00"
+        },
+        "wed": null,
+        "thu": {
+          "open": "08:00",
+          "close": "17:00"
+        },
+        "fri": {
+          "open": "08:00",
+          "close": "17:00"
+        },
+        "sat": {
+          "open": "08:00",
+          "close": "14:00"
+        }
+      },
+      "overrides": []
+    },
+    "lastUpdated": "2026-05-13T13:53:40.562Z"
   }
 ]

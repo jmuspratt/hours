@@ -7,7 +7,7 @@
   { "id": "maxima", "name": "Maxima", "category": "shop", "placeId": "ChIJF9TpuP9244kRFKBVhuX6RWM" },
   { "id": "lavictoria", "name": "La Victoria", "category": "restaurant", "placeId": "ChIJJ8xirVB244kRRvtF0kgbPuE" },
   { "id": "breadboard", "name": "Breadboard Bakery", "category": "bakery/coffee", "placeId": "ChIJ3bV-DEt344kRwtpOV13Sazs" },
-  { "id": "arlington-hair-salon", "name": "Arlington Hair Salon", "category": "services", "placeId": "ChIJg7Algfh244kRTyXkjfJ5CFs" },
+  { "id": "arlington-hair-salon", "name": "Arlington Hair Salon", "category": "health", "placeId": "ChIJg7Algfh244kRTyXkjfJ5CFs" },
   { "id": "helenas", "name": "Helena’s", "category": "shop", "placeId": "ChIJy3q_Ild244kRm092WQ6cMsY" },
   { "id": "punjab", "name": "Punjab", "category": "restaurant", "placeId": "ChIJTSZ3u1B244kRUP4sXEASxs0" },
   { "id": "acitron", "name": "Acitrón", "category": "restaurant", "placeId": "ChIJ6yZ3u1B244kRJqNMZVlJVxg" },
@@ -24,9 +24,11 @@
   { "id": "bicycle-belle", "name": "Bicycle Belle", "category": "bikes", "placeId": "ChIJwwR0HTx344kRTnlYEX0FyDk" },
   { "id": "belmont-wheelworks", "name": "Belmont Wheelworks", "category": "bikes", "placeId": "ChIJ0b-JS-J344kR0z5ZpgbqKyY" },
   { "id": "ace-wheelworks", "name": "Ace Wheelworks Somerville", "category": "bikes", "placeId": "ChIJndSl0yJ344kRJOosmZcUL7M" },
-  { "id": "walgreens-store", "name": "Walgreens (Store)", "category": "pharmacy", "placeId": "ChIJdegK1VV244kRXKOh0Ap4imY" },
-  { "id": "walgreens-pharmacy", "name": "Walgreens Pharmacy", "category": "pharmacy", "placeId": "ChIJ_Y_RRDt344kRB_XNtAA6ec0" },
-  { "id": "CVS", "name": "CVS (Store)", "category": "pharmacy", "placeId": "ChIJc2KtfE9244kRd6OqiX7ucsc" },
-  { "id": "cvs-pharmacy", "name": "CVS Pharmacy", "category": "pharmacy", "placeId": "ChIJwVUXDrN344kRwnECSioprLk" }  
+  { "id": "walgreens-store", "name": "Walgreens (Store)", "category": "health", "placeId": "ChIJdegK1VV244kRXKOh0Ap4imY" },
+  { "id": "walgreens-pharmacy", "name": "Walgreens Pharmacy", "category": "health", "placeId": "ChIJ_Y_RRDt344kRB_XNtAA6ec0" },
+  { "id": "CVS", "name": "CVS (Store)", "category": "health", "placeId": "ChIJc2KtfE9244kRd6OqiX7ucsc" },
+  { "id": "cvs-pharmacy", "name": "CVS Pharmacy", "category": "health", "placeId": "ChIJwVUXDrN344kRwnECSioprLk" },
+  { "id": "my-eye-dr", "name": "MyEyeDr.", "category": "health", "placeId": "ChIJ9S_EX6J344kR78eBvxal64Q" }  
+
 ]
 
