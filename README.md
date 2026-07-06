@@ -19,7 +19,7 @@ Three layers, all simple:
 │     - Daily: currentOpeningHours (7-day)     │
 │     - Writes hours.json                      │
 ├─────────────────────────────────────────────┤
-│  2. Static hosting (GitHub Pages / Netlify)  │
+│  2. Static hosting (rsync to web server)     │
 │     - hours.json (the data)                  │
 │     - index.html / app.js / sw.js            │
 │     - manifest.json                          │
@@ -125,7 +125,7 @@ Three filter buttons at the top: **Libraries**, **Restaurants**, **Shops**, plus
 
 ### Sort
 
-Always alphabetical by `name`.
+When no filter is active, businesses are grouped by category (alphabetical) with businesses sorted by name within each group. When a filter is active, results are a flat list sorted by name.
 
 ## Project structure
 
@@ -141,11 +141,12 @@ Always alphabetical by `name`.
 │   └── icon-*.png          # PWA icons
 ├── scripts/
 │   ├── build.js            # Fetches hours from Google API and writes app/hours.json
+│   ├── deploy.sh           # Bumps SW cache version and rsyncs app/ to server
 │   └── search-server.js    # Local server for looking up Google Place IDs
 ├── tools/
 │   └── search.html         # Place ID search UI (served by search-server.js)
 ├── businesses.json         # Config: list of placeIds + categories
-├── .env                    # GOOGLE_PLACES_API_KEY (not committed)
+├── .env                    # GOOGLE_PLACES_API_KEY and DEPLOY_PATH (not committed)
 ├── CLAUDE.md
 └── README.md
 ```
@@ -164,6 +165,7 @@ Always alphabetical by `name`.
 
 ```
 GOOGLE_PLACES_API_KEY=your_key_here
+DEPLOY_PATH=user@server:/path/to/web/root
 ```
 
 2. Populate `businesses.json` with your businesses. Each entry needs a Google Place ID — use the search tool (below) to find them:
@@ -182,7 +184,7 @@ GOOGLE_PLACES_API_KEY=your_key_here
 3. Run the build script to fetch hours from Google and write `app/hours.json`:
 
 ```bash
-node scripts/build.js
+npm run build
 ```
 
 4. Serve the `app/` directory (any static server works):
@@ -198,12 +200,37 @@ npx serve app/
 Use the included search tool to look up Google Place IDs without leaving the terminal:
 
 ```bash
-node scripts/search-server.js
+npm run search
 # → Place ID search → http://localhost:3456
 ```
 
 Open that URL, search by business name and ZIP code, and copy the Place ID directly into `businesses.json`. The server reads `GOOGLE_PLACES_API_KEY` from `.env` — no browser-side API key needed.
 
-### Automated build
+## Day-to-day workflow
 
-Set up a cron job or GitHub Action to run `node scripts/build.js` daily and commit/deploy the updated `hours.json`.
+### Adding or removing a business
+
+1. Edit `businesses.json` — add/remove the entry with its `id`, `name`, `category`, and `placeId`.
+   - Use `npm run search` to find the Place ID for a new business.
+2. Run `npm run build` to fetch fresh hours from Google.
+3. Run `npm run deploy` to push the updated `app/` to the server.
+
+### Refreshing hours data
+
+Run whenever you want to pick up current special-day overrides (holidays, modified hours):
+
+```bash
+npm run build && npm run deploy
+```
+
+The deploy script bumps the service worker cache version so installed PWAs pick up the new data on their next background fetch.
+
+### Deploying frontend changes
+
+After editing `app/` files (HTML, CSS, JS):
+
+```bash
+npm run deploy
+```
+
+The deploy rsyncs `app/` to `DEPLOY_PATH` with `--delete`, so removed files are cleaned up on the server.

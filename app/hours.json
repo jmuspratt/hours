@@ -10,10 +10,7 @@
     "lng": -71.1549265,
     "hours": {
       "regular": {
-        "sun": {
-          "open": "14:00",
-          "close": "17:00"
-        },
+        "sun": null,
         "mon": {
           "open": "09:00",
           "close": "21:00"
@@ -41,7 +38,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:34.155Z"
+    "lastUpdated": "2026-07-02T19:54:39.902Z"
   },
   {
     "id": "fox-library",
@@ -77,9 +74,14 @@
           "close": "17:00"
         }
       },
-      "overrides": []
+      "overrides": [
+        {
+          "date": "2026-07-04",
+          "hours": null
+        }
+      ]
     },
-    "lastUpdated": "2026-06-03T12:08:34.466Z"
+    "lastUpdated": "2026-07-02T19:54:40.264Z"
   },
   {
     "id": "book-rack",
@@ -123,7 +125,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:34.769Z"
+    "lastUpdated": "2026-07-02T19:54:40.646Z"
   },
   {
     "id": "tryst",
@@ -167,7 +169,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:35.069Z"
+    "lastUpdated": "2026-07-02T19:54:41.054Z"
   },
   {
     "id": "dunkin-369",
@@ -211,7 +213,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:35.366Z"
+    "lastUpdated": "2026-07-02T19:54:41.419Z"
   },
   {
     "id": "breadboard",
@@ -243,7 +245,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:35.652Z"
+    "lastUpdated": "2026-07-02T19:54:41.763Z"
   },
   {
     "id": "kickstand",
@@ -258,7 +260,7 @@
       "regular": {
         "sun": {
           "open": "08:00",
-          "close": "15:00"
+          "close": "16:00"
         },
         "mon": {
           "open": "08:00",
@@ -278,16 +280,16 @@
         },
         "fri": {
           "open": "08:00",
-          "close": "15:00"
+          "close": "16:00"
         },
         "sat": {
           "open": "08:00",
-          "close": "15:00"
+          "close": "16:00"
         }
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:35.993Z"
+    "lastUpdated": "2026-07-02T19:54:42.147Z"
   },
   {
     "id": "lavictoria",
@@ -319,16 +321,16 @@
         },
         "fri": {
           "open": "11:00",
-          "close": "20:15"
+          "close": "20:00"
         },
         "sat": {
           "open": "11:00",
-          "close": "20:15"
+          "close": "20:00"
         }
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:36.295Z"
+    "lastUpdated": "2026-07-02T19:54:42.526Z"
   },
   {
     "id": "arlington-hair-salon",
@@ -336,9 +338,9 @@
     "category": "health",
     "placeId": "ChIJg7Algfh244kRTyXkjfJ5CFs",
     "phone": "(781) 646-6425",
-    "address": "205 Broadway #207, Arlington",
-    "lat": 42.4120718,
-    "lng": -71.1445155,
+    "address": "205 Broadway, Arlington",
+    "lat": 42.412165699999996,
+    "lng": -71.1446279,
     "hours": {
       "regular": {
         "sun": null,
@@ -366,7 +368,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:36.602Z"
+    "lastUpdated": "2026-07-02T19:54:42.896Z"
   },
   {
     "id": "punjab",
@@ -407,7 +409,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:36.893Z"
+    "lastUpdated": "2026-07-02T19:54:43.508Z"
   },
   {
     "id": "acitron",
@@ -449,9 +451,24 @@
           "close": "21:30"
         }
       },
-      "overrides": []
+      "overrides": [
+        {
+          "date": "2026-07-03",
+          "hours": {
+            "open": "17:00",
+            "close": "21:30"
+          }
+        },
+        {
+          "date": "2026-07-04",
+          "hours": {
+            "open": "17:00",
+            "close": "21:30"
+          }
+        }
+      ]
     },
-    "lastUpdated": "2026-06-03T12:08:37.192Z"
+    "lastUpdated": "2026-07-02T19:54:43.989Z"
   },
   {
     "id": "elis",
@@ -495,7 +512,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:37.484Z"
+    "lastUpdated": "2026-07-02T19:54:44.429Z"
   },
   {
     "id": "wholefoods-arlington",
@@ -537,9 +554,17 @@
           "close": "21:00"
         }
       },
-      "overrides": []
+      "overrides": [
+        {
+          "date": "2026-07-04",
+          "hours": {
+            "open": "08:00",
+            "close": "18:00"
+          }
+        }
+      ]
     },
-    "lastUpdated": "2026-06-03T12:08:37.791Z"
+    "lastUpdated": "2026-07-02T19:54:44.996Z"
   },
   {
     "id": "wholefoods-medford",
@@ -581,9 +606,17 @@
           "close": "21:00"
         }
       },
-      "overrides": []
+      "overrides": [
+        {
+          "date": "2026-07-04",
+          "hours": {
+            "open": "08:00",
+            "close": "18:00"
+          }
+        }
+      ]
     },
-    "lastUpdated": "2026-06-03T12:08:38.082Z"
+    "lastUpdated": "2026-07-02T19:54:45.657Z"
   },
   {
     "id": "starmarket-belmont",
@@ -627,7 +660,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:38.373Z"
+    "lastUpdated": "2026-07-02T19:54:46.258Z"
   },
   {
     "id": "quebrada",
@@ -669,9 +702,18 @@
           "close": "18:00"
         }
       },
-      "overrides": []
+      "overrides": [
+        {
+          "date": "2026-07-04",
+          "hours": null
+        },
+        {
+          "date": "2026-07-05",
+          "hours": null
+        }
+      ]
     },
-    "lastUpdated": "2026-06-03T12:08:38.667Z"
+    "lastUpdated": "2026-07-02T19:54:46.885Z"
   },
   {
     "id": "shattuck",
@@ -715,7 +757,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:38.957Z"
+    "lastUpdated": "2026-07-02T19:54:47.286Z"
   },
   {
     "id": "yoshis",
@@ -756,7 +798,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:39.255Z"
+    "lastUpdated": "2026-07-02T19:54:47.809Z"
   },
   {
     "id": "scoop",
@@ -797,7 +839,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:39.557Z"
+    "lastUpdated": "2026-07-02T19:54:48.271Z"
   },
   {
     "id": "tatte-arlington",
@@ -841,7 +883,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:39.840Z"
+    "lastUpdated": "2026-07-02T19:54:48.608Z"
   },
   {
     "id": "belmont-books",
@@ -885,7 +927,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:40.123Z"
+    "lastUpdated": "2026-07-02T19:54:48.970Z"
   },
   {
     "id": "bicycle-belle",
@@ -901,26 +943,23 @@
         "sun": null,
         "mon": null,
         "tue": {
-          "open": "10:00",
-          "close": "17:00"
+          "open": "11:00",
+          "close": "14:00"
         },
         "wed": {
           "open": "11:00",
-          "close": "19:00"
+          "close": "14:00"
         },
         "thu": {
-          "open": "10:00",
-          "close": "17:00"
+          "open": "11:00",
+          "close": "14:00"
         },
-        "fri": {
-          "open": "10:00",
-          "close": "17:00"
-        },
+        "fri": null,
         "sat": null
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:40.413Z"
+    "lastUpdated": "2026-07-02T19:54:49.327Z"
   },
   {
     "id": "belmont-wheelworks",
@@ -962,9 +1001,14 @@
           "close": "18:00"
         }
       },
-      "overrides": []
+      "overrides": [
+        {
+          "date": "2026-07-04",
+          "hours": null
+        }
+      ]
     },
-    "lastUpdated": "2026-06-03T12:08:40.694Z"
+    "lastUpdated": "2026-07-02T19:54:49.688Z"
   },
   {
     "id": "ace-wheelworks",
@@ -1006,9 +1050,14 @@
           "close": "18:00"
         }
       },
-      "overrides": []
+      "overrides": [
+        {
+          "date": "2026-07-04",
+          "hours": null
+        }
+      ]
     },
-    "lastUpdated": "2026-06-03T12:08:40.969Z"
+    "lastUpdated": "2026-07-02T19:54:50.240Z"
   },
   {
     "id": "walgreens-store",
@@ -1017,8 +1066,8 @@
     "placeId": "ChIJdegK1VV244kRXKOh0Ap4imY",
     "phone": "(781) 643-4112",
     "address": "324 Massachusetts Ave, Arlington",
-    "lat": 42.4252883,
-    "lng": -71.18740140000001,
+    "lat": 42.410005999999996,
+    "lng": -71.1485429,
     "hours": {
       "regular": {
         "sun": {
@@ -1052,7 +1101,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:41.240Z"
+    "lastUpdated": "2026-07-02T19:54:50.585Z"
   },
   {
     "id": "walgreens-pharmacy",
@@ -1094,9 +1143,14 @@
           "close": "18:00"
         }
       },
-      "overrides": []
+      "overrides": [
+        {
+          "date": "2026-07-04",
+          "hours": null
+        }
+      ]
     },
-    "lastUpdated": "2026-06-03T12:08:41.519Z"
+    "lastUpdated": "2026-07-02T19:54:51.181Z"
   },
   {
     "id": "CVS",
@@ -1140,7 +1194,7 @@
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:41.798Z"
+    "lastUpdated": "2026-07-02T19:54:51.802Z"
   },
   {
     "id": "cvs-pharmacy",
@@ -1182,9 +1236,17 @@
           "close": "20:00"
         }
       },
-      "overrides": []
+      "overrides": [
+        {
+          "date": "2026-07-04",
+          "hours": {
+            "open": "10:00",
+            "close": "18:00"
+          }
+        }
+      ]
     },
-    "lastUpdated": "2026-06-03T12:08:42.076Z"
+    "lastUpdated": "2026-07-02T19:54:52.211Z"
   },
   {
     "id": "my-eye-dr",
@@ -1215,14 +1277,11 @@
           "open": "08:00",
           "close": "17:00"
         },
-        "sat": {
-          "open": "08:00",
-          "close": "14:00"
-        }
+        "sat": null
       },
       "overrides": []
     },
-    "lastUpdated": "2026-06-03T12:08:42.353Z"
+    "lastUpdated": "2026-07-02T19:54:52.555Z"
   },
   {
     "id": "maxima",
@@ -1264,9 +1323,18 @@
           "close": "19:00"
         }
       },
-      "overrides": []
+      "overrides": [
+        {
+          "date": "2026-07-04",
+          "hours": null
+        },
+        {
+          "date": "2026-07-05",
+          "hours": null
+        }
+      ]
     },
-    "lastUpdated": "2026-06-03T12:08:42.632Z"
+    "lastUpdated": "2026-07-02T19:54:52.886Z"
   },
   {
     "id": "henry-bear",
@@ -1308,9 +1376,14 @@
           "close": "19:00"
         }
       },
-      "overrides": []
+      "overrides": [
+        {
+          "date": "2026-07-04",
+          "hours": null
+        }
+      ]
     },
-    "lastUpdated": "2026-06-03T12:08:42.904Z"
+    "lastUpdated": "2026-07-02T19:54:53.225Z"
   },
   {
     "id": "helenas",
@@ -1352,8 +1425,13 @@
           "close": "18:00"
         }
       },
-      "overrides": []
+      "overrides": [
+        {
+          "date": "2026-07-04",
+          "hours": null
+        }
+      ]
     },
-    "lastUpdated": "2026-06-03T12:08:43.185Z"
+    "lastUpdated": "2026-07-02T19:54:53.646Z"
   }
 ]
