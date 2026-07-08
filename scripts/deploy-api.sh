@@ -11,7 +11,7 @@ fi
 
 if [ -z "$API_DEPLOY_PATH" ]; then
   echo "Error: API_DEPLOY_PATH is not set"
-  echo "Set it in .env: API_DEPLOY_PATH=user@server:/path/to/hours-api"
+  echo "Set it in .env: API_DEPLOY_PATH=user@server:/var/www/example.com/api-server"
   exit 1
 fi
 
@@ -19,7 +19,7 @@ API_DEPLOY_HOST="${API_DEPLOY_PATH%%:*}"
 
 echo "Source: scripts/api-server.js, scripts/lib/, package.json"
 echo "Destination: $API_DEPLOY_PATH"
-echo "This will restart the hours-api systemd service on $API_DEPLOY_HOST."
+echo "This will restart the hours-api PM2 process on $API_DEPLOY_HOST."
 read -p "Are you sure? (type 'yes' to continue): " confirm
 
 if [ "$confirm" != "yes" ]; then
@@ -27,6 +27,6 @@ if [ "$confirm" != "yes" ]; then
   exit 1
 fi
 
-rsync -azP scripts/api-server.js scripts/lib/ package.json "$API_DEPLOY_PATH/"
-ssh "$API_DEPLOY_HOST" "systemctl restart hours-api"
+rsync -azP scripts/api-server.js scripts/lib package.json "$API_DEPLOY_PATH/"
+ssh "$API_DEPLOY_HOST" "pm2 restart hours-api"
 echo "API deploy complete!"

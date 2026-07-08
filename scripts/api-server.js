@@ -17,11 +17,15 @@ import {
 import { mapPrimaryTypeToCategory } from "./lib/category-map.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(__dirname, "..");
 
-// Load .env without any external dependencies
-const envPath = join(ROOT, ".env");
-if (existsSync(envPath)) {
+// Load .env without any external dependencies. Checked next to this script
+// first — that's where it's deployed on the server (flat, alongside
+// api-server.js) — falling back to one level up, which is where it lives
+// in local dev (this file is in scripts/, .env is at the repo root).
+const envPath = [join(__dirname, ".env"), join(__dirname, "..", ".env")].find(
+  existsSync,
+);
+if (envPath) {
   for (const line of readFileSync(envPath, "utf8").split("\n")) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#")) continue;
@@ -75,6 +79,10 @@ function checkRateLimit(ip, bucket) {
 }
 
 function clientIp(req) {
+  // Behind nginx, req.socket.remoteAddress is always nginx's own address —
+  // trust X-Forwarded-For (set by our nginx config) for the real client.
+  const forwarded = req.headers["x-forwarded-for"];
+  if (forwarded) return forwarded.split(",")[0].trim();
   return req.socket.remoteAddress || "unknown";
 }
 

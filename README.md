@@ -147,8 +147,6 @@ When no filter is active, businesses are grouped by category (alphabetical) with
 │   ├── deploy.sh           # Bumps SW cache version and rsyncs app/ to server (static frontend)
 │   ├── deploy-api.sh       # Rsyncs api-server.js + lib/ to the droplet and restarts the service
 │   └── start.js            # Local static server for previewing app/, proxies /api/* to api-server.js
-├── infra/
-│   └── hours-api.service   # systemd unit template for api-server.js (installed manually on the droplet)
 ├── .env                    # API keys, deploy paths, Edit-mode proxy config (not committed)
 ├── CLAUDE.md
 └── README.md
@@ -167,14 +165,16 @@ When no filter is active, businesses are grouped by category (alphabetical) with
 1. Create a `.env` file in the project root:
 
 ```
-DEPLOY_PATH=user@server:/path/to/web/root
+DEPLOY_PATH=user@server:/var/www/example.com/html
 
 # Edit-mode API proxy (scripts/api-server.js)
 GOOGLE_PLACES_API_KEY=your_key_here
 API_PORT=8787
 APP_SHARED_SECRET=some-random-string
 ALLOWED_ORIGIN=http://localhost:3000
-API_DEPLOY_PATH=user@server:/path/to/hours-api
+# Nested alongside the site's own directory (sibling to html/) rather than
+# its own /var/www entry — it's a proxied service, not a document root.
+API_DEPLOY_PATH=user@server:/var/www/example.com/api-server
 ```
 
 `APP_SHARED_SECRET` must also be set as the `APP_SHARED_SECRET` constant near the top of `app/app.js` — the two must match exactly (see the Edit-mode note above on why this is a deterrent, not real auth).
@@ -214,4 +214,4 @@ After editing `scripts/api-server.js` or `scripts/lib/`:
 npm run deploy:api
 ```
 
-Rsyncs the proxy code to `API_DEPLOY_PATH` and restarts the `hours-api` systemd service on the server. This is separate from `npm run deploy` on purpose — a frontend-only deploy should never need to restart the live proxy, and vice versa. First-time server setup (installing `infra/hours-api.service`, adding the nginx `/api/` proxy block) is a manual one-time step, not scripted here.
+Rsyncs the proxy code to `API_DEPLOY_PATH` and restarts the `hours-api` PM2 process on the server (the droplet already manages other Node services with PM2 — this follows the same convention rather than introducing a separate systemd unit). This is separate from `npm run deploy` on purpose — a frontend-only deploy should never need to restart the live proxy, and vice versa. First-time server setup (`pm2 start` under the app's directory, adding the nginx `/api/` proxy block) is a manual one-time step, not scripted here.
