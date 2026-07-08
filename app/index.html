@@ -14,10 +14,26 @@
 </head>
 <body>
   <div id="filter-bar">
-    <div id="filter-scroll"></div>
-    <button id="clear-btn">Clear</button>
+    <div id="title-row">
+      <div id="app-title">Hours</div>
+      <button id="edit-btn">Settings</button>
+    </div>
+    <div id="filter-row">
+      <div id="filter-scroll"></div>
+      <button id="clear-btn">Reset</button>
+    </div>
   </div>
   <ul id="business-list"></ul>
+  <div id="edit-panel" hidden>
+    <div id="edit-search-row">
+      <input id="edit-query" type="text" placeholder="Search to add...">
+      <input id="edit-zip" type="text" inputmode="numeric" placeholder="Zip (optional)" maxlength="10">
+      <button id="edit-search-btn">Search</button>
+    </div>
+    <ul id="edit-results"></ul>
+    <div id="edit-current-label">Your businesses</div>
+    <ul id="edit-current"></ul>
+  </div>
   <p id="updated-label"></p>
   <script src="app.js" type="module"></script>
 </body>

@@ -2,8 +2,8 @@
   "type": "module",
   "scripts": {
     "start": "node scripts/start.js",
-    "search": "node scripts/search-server.js",
-    "build": "node scripts/build.js",
-    "deploy": "bash scripts/deploy.sh"
+    "deploy": "bash scripts/deploy.sh",
+    "api": "node scripts/api-server.js",
+    "deploy:api": "bash scripts/deploy-api.sh"
   }
 }

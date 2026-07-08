@@ -1,6 +1,18 @@
 const STORAGE_KEY = "hours_data";
 const TIMESTAMP_KEY = "hours_updated";
+const TRACKED_IDS_KEY = "hours_tracked_ids";
+const STALE_MS = 7 * 24 * 60 * 60 * 1000; // refresh tracked hours after a week
+// Ships inside this unminified file, so it's abuse-deterrence against
+// scripted hammering of /api/*, not real authentication.
+const APP_SHARED_SECRET = "PMsvFX-f2jc7";
 const DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+
+function slugify(name) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 
 // --- Time helpers ---
 
@@ -202,6 +214,18 @@ function renderList() {
   const now = new Date();
   list.innerHTML = "";
 
+  if (currentBusinesses.length === 0) {
+    list.innerHTML = `
+      <li class="onboarding-empty">
+        <p>No businesses yet.</p>
+        <button id="onboarding-add-btn" class="cta-btn">Add Businesses</button>
+      </li>
+    `;
+    document.getElementById("clear-btn").classList.remove("visible");
+    updateTimestamp();
+    return;
+  }
+
   if (activeFilters.size === 0) {
     // Group by category (alphabetized), businesses sorted by name within each group
     const groups = {};
@@ -235,10 +259,22 @@ function renderList() {
   updateTimestamp();
 }
 
-function render(businesses) {
-  currentBusinesses = businesses;
+// Single entry point for "something changed, redraw whatever's visible."
+// Every mutation (filters, edit-mode add/remove/category, background
+// refresh) calls this instead of remembering which specific sub-render
+// functions apply — cheap enough at this list size to just redraw all of
+// them every time, and it removes an entire class of "forgot to re-render
+// view X" bugs.
+function scheduleRender() {
   renderFilters();
   renderList();
+  renderEditCurrent();
+  renderEditResults();
+}
+
+function render(businesses) {
+  currentBusinesses = businesses;
+  scheduleRender();
 }
 
 // --- Filters ---
@@ -276,6 +312,10 @@ document.getElementById("clear-btn").addEventListener("click", () => {
 });
 
 document.getElementById("business-list").addEventListener("click", (e) => {
+  if (e.target.closest("#onboarding-add-btn")) {
+    enterEditMode();
+    return;
+  }
   if (e.target.closest("a")) return;
   const row = e.target.closest(".biz-row");
   if (row) row.classList.toggle("expanded");
@@ -308,30 +348,416 @@ function updateTimestamp() {
 
 // --- Data loading ---
 
-async function loadData() {
+function loadData() {
   const cached = localStorage.getItem(STORAGE_KEY);
 
   if (cached) {
     render(JSON.parse(cached));
+    refreshIfStale();
+    return;
   }
+
+  // No personal list yet on this device — nothing to seed from anymore.
+  // renderList() shows the "Add Businesses" onboarding state for an empty list.
+  render([]);
+}
+
+// Silent background freshness check — never blocks render, never shown to
+// the user. Refreshes hours for every tracked business without ever
+// touching name/category, so the user's own overrides survive.
+async function refreshIfStale() {
+  const ts = localStorage.getItem(TIMESTAMP_KEY);
+  if (ts && Date.now() - new Date(ts).getTime() < STALE_MS) return;
+
+  const trackedIds = JSON.parse(localStorage.getItem(TRACKED_IDS_KEY) || "[]");
+  if (trackedIds.length === 0) return;
 
   try {
-    const res = await fetch("hours.json");
+    const res = await fetch("/api/details", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-App-Secret": APP_SHARED_SECRET,
+      },
+      body: JSON.stringify({ placeIds: trackedIds }),
+    });
     if (!res.ok) throw new Error(res.status);
-    const fresh = await res.json();
-    const freshStr = JSON.stringify(fresh);
+    const updates = await res.json();
+    const byId = new Map(updates.map((u) => [u.placeId, u]));
 
-    if (freshStr !== cached) {
-      localStorage.setItem(STORAGE_KEY, freshStr);
-      localStorage.setItem(TIMESTAMP_KEY, new Date().toISOString());
-      render(fresh);
+    for (const biz of currentBusinesses) {
+      const u = byId.get(biz.placeId);
+      if (!u) continue;
+      biz.hours = u.hours;
+      biz.phone = u.phone;
+      biz.address = u.address;
+      biz.lat = u.lat;
+      biz.lng = u.lng;
+      biz.lastUpdated = u.lastUpdated;
+      // name/category intentionally left untouched
     }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(currentBusinesses));
+    localStorage.setItem(TIMESTAMP_KEY, new Date().toISOString());
+    scheduleRender();
   } catch {
-    if (!cached) {
-      document.getElementById("business-list").innerHTML =
-        '<li style="padding:20px 16px;font-size:13px;color:var(--text-muted)">No data available. Connect to the internet to load hours.</li>';
+    // Offline or server unreachable — silently keep showing cached data.
+  }
+}
+
+// --- Edit mode ---
+
+let pendingAdds = new Map(); // placeId -> { placeId, name, address, category }
+let pendingRemoves = new Set(); // placeId
+let userLocation = null; // { lat, lng } once geolocation resolves
+let locationRequested = false;
+let lastSearchResults = []; // so both edit-results and edit-current can re-render in sync
+
+// Best-effort, silent — requested once per page load. If granted and the
+// search fields are still empty, auto-runs a "nearby" search so Edit mode
+// shows something without the user typing anything. Falls back to manual
+// zip/query entry if denied, unsupported, or slow.
+function requestLocationOnce() {
+  if (locationRequested || !("geolocation" in navigator)) return;
+  locationRequested = true;
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      const zipEmpty = !document.getElementById("edit-zip").value.trim();
+      const queryEmpty = !document.getElementById("edit-query").value.trim();
+      if (zipEmpty && queryEmpty) searchBusinesses();
+    },
+    () => {
+      // Denied or unavailable — manual zip/query entry still works.
+    },
+    { timeout: 5000 },
+  );
+}
+
+function enterEditMode() {
+  pendingAdds = new Map();
+  pendingRemoves = new Set();
+  lastSearchResults = [];
+  document.getElementById("edit-btn").textContent = "Save";
+  document.getElementById("edit-btn").classList.add("active");
+  document.getElementById("filter-bar").classList.add("editing");
+  document.getElementById("business-list").hidden = true;
+  document.getElementById("edit-panel").hidden = false;
+  scheduleRender();
+
+  if (userLocation) searchBusinesses();
+  else requestLocationOnce();
+}
+
+async function exitEditMode() {
+  document.getElementById("edit-btn").textContent = "Settings";
+  document.getElementById("edit-btn").classList.remove("active");
+  document.getElementById("filter-bar").classList.remove("editing");
+  document.getElementById("business-list").hidden = false;
+  document.getElementById("edit-panel").hidden = true;
+
+  let changed = false;
+
+  if (pendingRemoves.size > 0) {
+    currentBusinesses = currentBusinesses.filter(
+      (b) => !pendingRemoves.has(b.placeId),
+    );
+    changed = true;
+  }
+
+  if (pendingAdds.size > 0) {
+    try {
+      const res = await fetch("/api/details", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-App-Secret": APP_SHARED_SECRET,
+        },
+        body: JSON.stringify({ placeIds: [...pendingAdds.keys()] }),
+      });
+      if (res.ok) {
+        const details = await res.json();
+        for (const d of details) {
+          const pending = pendingAdds.get(d.placeId);
+          if (!pending) continue;
+          currentBusinesses.push({
+            id: slugify(d.name),
+            name: d.name,
+            category: pending.category,
+            placeId: d.placeId,
+            phone: d.phone,
+            address: d.address,
+            lat: d.lat,
+            lng: d.lng,
+            hours: d.hours,
+            lastUpdated: d.lastUpdated,
+          });
+        }
+        changed = true;
+      }
+    } catch {
+      // Offline or server unreachable — additions are simply dropped
+      // this session; the user can retry in Edit mode later.
     }
   }
+
+  pendingAdds = new Map();
+  pendingRemoves = new Set();
+
+  if (changed) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(currentBusinesses));
+    localStorage.setItem(
+      TRACKED_IDS_KEY,
+      JSON.stringify(currentBusinesses.map((b) => b.placeId).filter(Boolean)),
+    );
+    localStorage.setItem(TIMESTAMP_KEY, new Date().toISOString());
+  }
+  scheduleRender();
+}
+
+function renderEditCurrent() {
+  const list = document.getElementById("edit-current");
+  list.innerHTML = "";
+  const sorted = [...currentBusinesses].sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
+  const existingCategories = new Set(currentBusinesses.map((b) => b.category));
+
+  for (const biz of sorted) {
+    const removed = pendingRemoves.has(biz.placeId);
+
+    const categories = [
+      ...new Set([...existingCategories, biz.category]),
+    ].sort();
+    const options =
+      categories
+        .map(
+          (c) =>
+            `<option value="${c}" ${c === biz.category ? "selected" : ""}>${categoryLabel(c)}</option>`,
+        )
+        .join("") +
+      `<option value="${NEW_CATEGORY_VALUE}">New category…</option>`;
+
+    const li = document.createElement("li");
+    li.className = "edit-row";
+    if (removed) li.style.opacity = "0.4";
+    li.innerHTML = `
+      <div class="edit-row-info">
+        <div class="edit-row-name">${biz.name}</div>
+      </div>
+      <select class="edit-category-select" data-place-id="${biz.placeId}" ${removed ? "disabled" : ""}>${options}</select>
+      <input type="text" class="edit-category-new-input" placeholder="Category name" hidden>
+      <button class="edit-toggle-btn remove" data-place-id="${biz.placeId}">${removed ? "Removed" : "Remove"}</button>
+    `;
+    list.appendChild(li);
+  }
+}
+
+// Category changes for already-tracked businesses apply immediately — no
+// API call needed, so there's no reason to stage them like adds/removes.
+function updateBusinessCategory(placeId, newCategory) {
+  const biz = currentBusinesses.find((b) => b.placeId === placeId);
+  if (!biz || !newCategory) return;
+  biz.category = newCategory;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(currentBusinesses));
+  scheduleRender();
+}
+
+const NEW_CATEGORY_VALUE = "__new__";
+
+function renderEditResults() {
+  const list = document.getElementById("edit-results");
+  list.innerHTML = "";
+
+  const existingCategories = new Set(currentBusinesses.map((b) => b.category));
+
+  for (const r of lastSearchResults) {
+    const trackedBiz = currentBusinesses.find((b) => b.placeId === r.placeId);
+    const alreadyTracked = !!trackedBiz;
+    // Already-tracked results toggle Remove ⇄ Add (staging/unstaging a
+    // removal); new results toggle Add ⇄ Added (staging/unstaging an add).
+    const pendingRemove = alreadyTracked && pendingRemoves.has(r.placeId);
+    const added = pendingAdds.has(r.placeId);
+    const btnLabel = alreadyTracked
+      ? pendingRemove
+        ? "Add"
+        : "Remove"
+      : added
+        ? "Added"
+        : "Add";
+    const btnClass = alreadyTracked
+      ? pendingRemove
+        ? ""
+        : "remove"
+      : added
+        ? "added"
+        : "";
+
+    // Already-tracked rows show/edit the business's real category; new
+    // results default to Google's suggestion. Either way the current
+    // value is guaranteed to appear even if it's not already in use —
+    // that was the bug in the original <select>.
+    const currentCategory = alreadyTracked
+      ? trackedBiz.category
+      : r.suggestedCategory;
+    const categories = [
+      ...new Set([...existingCategories, currentCategory]),
+    ].sort();
+    const options =
+      categories
+        .map(
+          (c) =>
+            `<option value="${c}" ${c === currentCategory ? "selected" : ""}>${categoryLabel(c)}</option>`,
+        )
+        .join("") +
+      `<option value="${NEW_CATEGORY_VALUE}">New category…</option>`;
+
+    const li = document.createElement("li");
+    li.className = "edit-row";
+    li.innerHTML = `
+      <div class="edit-row-info">
+        <div class="edit-row-name">${r.name}</div>
+        <div class="edit-row-address">${r.address ?? ""}</div>
+      </div>
+      <select class="edit-category-select" data-place-id="${r.placeId}" ${pendingRemove ? "disabled" : ""}>${options}</select>
+      <input type="text" class="edit-category-new-input" placeholder="Category name" hidden>
+      <button class="edit-toggle-btn ${btnClass}" data-place-id="${r.placeId}" data-name="${r.name}" data-address="${r.address ?? ""}">
+        ${btnLabel}
+      </button>
+    `;
+    list.appendChild(li);
+  }
+}
+
+async function searchBusinesses() {
+  const zip = document.getElementById("edit-zip").value.trim();
+  const q = document.getElementById("edit-query").value.trim();
+  const resultsEl = document.getElementById("edit-results");
+  if (!zip && !q && !userLocation) return;
+
+  resultsEl.innerHTML =
+    '<li class="edit-row" style="color:var(--text-muted)">Searching…</li>';
+
+  try {
+    const params = new URLSearchParams();
+    if (zip) params.set("zip", zip);
+    if (q) params.set("q", q);
+    if (userLocation) {
+      params.set("lat", userLocation.lat);
+      params.set("lng", userLocation.lng);
+    }
+    const res = await fetch(`/api/search?${params}`, {
+      headers: { "X-App-Secret": APP_SHARED_SECRET },
+    });
+    if (!res.ok) throw new Error(res.status);
+    lastSearchResults = await res.json();
+    scheduleRender();
+  } catch {
+    resultsEl.innerHTML =
+      '<li class="edit-row" style="color:var(--text-muted)">Search failed. Check your connection.</li>';
+  }
+}
+
+document.getElementById("edit-btn").addEventListener("click", () => {
+  if (document.getElementById("edit-panel").hidden) {
+    enterEditMode();
+  } else {
+    exitEditMode();
+  }
+});
+
+document
+  .getElementById("edit-search-btn")
+  .addEventListener("click", searchBusinesses);
+
+for (const id of ["edit-zip", "edit-query"]) {
+  document.getElementById(id).addEventListener("keydown", (e) => {
+    if (e.key === "Enter") searchBusinesses();
+  });
+}
+
+// Selecting "New category…" swaps the select for a plain text input.
+function toggleRemoval(placeId) {
+  if (pendingRemoves.has(placeId)) pendingRemoves.delete(placeId);
+  else pendingRemoves.add(placeId);
+  scheduleRender();
+}
+
+document.getElementById("edit-current").addEventListener("click", (e) => {
+  const btn = e.target.closest(".edit-toggle-btn");
+  if (!btn) return;
+  toggleRemoval(btn.dataset.placeId);
+});
+
+document.getElementById("edit-results").addEventListener("click", (e) => {
+  const btn = e.target.closest(".edit-toggle-btn");
+  if (!btn) return;
+  const placeId = btn.dataset.placeId;
+
+  // Already-tracked businesses toggle a pending removal, same Set the
+  // "Your businesses" list uses — keep both lists in sync.
+  if (currentBusinesses.some((b) => b.placeId === placeId)) {
+    toggleRemoval(placeId);
+    return;
+  }
+
+  const row = btn.closest(".edit-row");
+  const select = row.querySelector(".edit-category-select");
+  const newInput = row.querySelector(".edit-category-new-input");
+  const category = newInput.hidden
+    ? select.value
+    : newInput.value.trim().toLowerCase() || "shops";
+
+  if (pendingAdds.has(placeId)) pendingAdds.delete(placeId);
+  else {
+    pendingAdds.set(placeId, {
+      placeId,
+      name: btn.dataset.name,
+      address: btn.dataset.address,
+      category,
+    });
+  }
+  scheduleRender();
+});
+
+// Category editing is identical in both lists — selecting an existing
+// category commits immediately (a no-op if this row isn't a tracked
+// business yet, since updateBusinessCategory() guards on that itself);
+// selecting "New category…" swaps the select for a plain text input.
+function handleCategorySelectChange(e) {
+  const select = e.target.closest(".edit-category-select");
+  if (!select) return;
+  if (select.value === NEW_CATEGORY_VALUE) {
+    const newInput = select.nextElementSibling;
+    select.hidden = true;
+    newInput.hidden = false;
+    newInput.focus();
+    return;
+  }
+  updateBusinessCategory(select.dataset.placeId, select.value);
+}
+
+function handleCategoryInputKeydown(e) {
+  if (e.key === "Enter" && e.target.closest(".edit-category-new-input")) {
+    e.target.blur();
+  }
+}
+
+function handleCategoryInputBlur(e) {
+  const newInput = e.target.closest?.(".edit-category-new-input");
+  if (!newInput || newInput.hidden) return;
+  const select = newInput.previousElementSibling;
+  const category = newInput.value.trim().toLowerCase();
+  if (category) updateBusinessCategory(select.dataset.placeId, category);
+  else scheduleRender(); // empty — revert to showing the select
+}
+
+for (const listId of ["edit-current", "edit-results"]) {
+  const list = document.getElementById(listId);
+  list.addEventListener("change", handleCategorySelectChange);
+  list.addEventListener("keydown", handleCategoryInputKeydown);
+  // blur doesn't bubble — listen on the capture phase to delegate it.
+  list.addEventListener("blur", handleCategoryInputBlur, true);
 }
 
 if ("serviceWorker" in navigator) {

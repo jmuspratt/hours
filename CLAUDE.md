@@ -10,14 +10,14 @@ A single-page PWA that displays local business hours. Vanilla HTML/CSS/JS — no
 
 1. **Speed above all else.** The localStorage read → render path should feel instant. No loading spinners, no skeleton screens. If localStorage has data, paint it immediately.
 2. **Information density.** This is a utility, not a showcase. Small text, tight rows, no wasted space. Think of it as a personal reference card, not a consumer app.
-3. **Tactile swipe interaction.** The swipe-to-reveal-tomorrow must feel native — smooth, with momentum, and a snap-back.
+3. **Tap-to-expand, not swipe.** Tapping a row expands it in place to show the full weekly schedule, upcoming overrides, and contact links — instant, no animation. (An earlier version of this spec called for a swipe-to-reveal-tomorrow gesture; that was never built. Don't resurrect it without checking with the user first — this was a deliberate simplification, not an oversight.)
 
 ## Frontend details
 
 ### HTML structure
 
 Single `index.html` with:
-- A fixed top bar with filter buttons (Libraries, Restaurants, Shops, Clear)
+- A fixed top bar with filter pills generated dynamically from whatever categories exist in the current business list, plus a Clear button and an Edit button
 - A scrollable list below it
 - No hamburger menus, no navbars, no footers
 
@@ -56,44 +56,29 @@ Color coding:
 - "Open" text is green
 - "Closed" text is a muted red/warm gray — not alarming, just informational
 
-### Swipe interaction
+### Tap-to-expand interaction
 
-Each row is horizontally swipeable. Swiping right (finger moves left-to-right) reveals tomorrow's hours on the right side:
+Tapping a row toggles it between collapsed and expanded — instant, no transition. Expanded, it reveals:
+- The full weekly schedule, with consecutive days sharing identical hours grouped (e.g. "Mon–Fri")
+- Any upcoming date-specific overrides (holidays, modified hours)
+- Phone and maps links, if available
 
-```
-                              Tomorrow: 10 AM – 5 PM
-```
-
-or
-
-```
-                              Tomorrow: Closed
-```
-
-Implementation: use touch events (touchstart, touchmove, touchend). The row content translates horizontally. The "tomorrow" info is positioned behind/beside the main content and revealed as the row slides. Snap back on release if the swipe is less than ~30% of row width. If swiped far enough, hold in the revealed position until tapped or swiped back.
-
-"Tomorrow" means the next calendar day — compute this from the hours data the same way as today's status, but for tomorrow's day-of-week, checking overrides first.
+Tapping the row again (or anywhere outside a link within it) collapses it back.
 
 ### Filters
 
-Filter buttons styled as small pills/chips at the top. When active, they get a filled background. When inactive, they are outlined/muted.
+Filter pills styled as small pills/chips at the top, generated dynamically from whatever categories are present in the current business list — not a fixed set. When active, a pill gets a filled background; inactive pills are outlined/muted.
 
 - Tapping an inactive filter activates it and hides non-matching businesses
-- Tapping an active filter deactivates it
-- Multiple filters can be active simultaneously (OR logic)
-- The Clear button deactivates all filters and shows everything
-- Clear button is only visible when at least one filter is active
+- Filters are single-select: activating one deactivates whatever was previously active
+- Tapping the active filter deactivates it (shows everything)
+- The Clear button deactivates the active filter and shows everything
+- Clear button is only visible when a filter is active
 - Filter transitions should not be animated — just instant show/hide
 
 ### Offline behavior
 
-The service worker should cache:
-- `index.html`
-- `style.css`
-- `app.js`
-- `hours.json`
-
-Use a cache-first strategy for the app shell (html, css, js) and a stale-while-revalidate strategy for `hours.json`. This means the app works fully offline with whatever data was last cached.
+The service worker should cache-first the app shell (`index.html`, `style.css`, `app.js`, `sw.js`). `/api/*` requests must always pass straight through to the network, never cached — they're the (authenticated, dynamic) Edit-mode calls. The app's actual data lives in localStorage, not a cached file, so it works fully offline with whatever was last saved there.
 
 ### PWA manifest
 
@@ -124,279 +109,31 @@ Use `display: standalone` so it looks like a native app (no Safari chrome). Prov
 
 ### Data loading (app.js)
 
+Each device owns its own business list in localStorage — there's no shipped seed file and no shared source of truth. See README's "Personal list & Edit mode" and "Frontend behavior" sections for the full model; summary:
+
 ```
 On page load:
   1. const cached = localStorage.getItem('hours_data')
-  2. if (cached) → parse and render immediately
-  3. fetch('hours.json')
-     → on success:
-        - compare with cached data
-        - if different, update localStorage and re-render
-        - update 'hours_updated' timestamp in localStorage
-     → on failure (offline, network error):
-        - silently do nothing (cached data is already displayed)
-  4. if (!cached && fetch failed) → show "No data available. Connect to the internet to load hours."
+  2. if (cached) → parse and render immediately, then silently check staleness
+     (if 'hours_updated' is >7 days old, POST tracked placeIds to the
+     Edit-mode API proxy's /api/details, merge hours/phone/address into
+     the existing list, never touching name/category)
+  3. else (true first run, nothing in localStorage yet) → render an empty
+     state: "No businesses yet. Tap Edit to search for and add some." No
+     network call.
 ```
 
-Do not show any loading state if cached data exists. The user should never perceive a loading moment on a warm launch.
+Do not show any loading state if cached data exists. The user should never perceive a loading moment on a warm launch. The staleness check and any Edit-mode network activity must never block or show a loading/error state either — fail silently and keep showing cached data.
 
 ### Timestamp display
 
 Show a small, muted "Updated {relative time}" at the very bottom of the list. Example: "Updated 3 hours ago" or "Updated yesterday". This helps the user know if their data might be stale. Use the `hours_updated` localStorage timestamp for this.
 
-## Build script (scripts/build.js)
+## Edit mode
 
-Node.js script. Dependencies: only `node-fetch` (or use Node 18+ built-in fetch).
+An Edit button in the top bar lets the user search Google Places (by device location, zip code, and/or free text) and add/remove businesses from their own device's list — see README's "Personal list & Edit mode" section for the full architecture (the stateless `scripts/api-server.js` proxy, geolocation-biased search, category auto-suggestion, the shared-secret caveat, the 7-day refresh cadence). Don't duplicate that spec here; keep this file and README in sync if either changes.
 
-### Input
-
-Reads `businesses.json` from the project root. This file contains the list of businesses with their placeIds and categories:
-
-```json
-[
-  { "id": "robbins-library", "name": "Robbins Library", "category": "library", "placeId": "ChIJ..." },
-  { "id": "cafe-nero", "name": "Café Nero", "category": "restaurant", "placeId": "ChIJ..." }
-]
-```
-
-### Process
-
-For each business:
-1. Call Google Places API (New) Place Details endpoint
-2. Request fields: `displayName,regularOpeningHours,currentOpeningHours`
-3. This triggers the Enterprise SKU (highest of the three field tiers)
-4. Parse the response into the data model described in README.md
-5. Merge: start with `regularOpeningHours` as the baseline, then overlay any `currentOpeningHours.specialDays` as overrides
-
-### API call format
-
-```
-GET https://places.googleapis.com/v1/places/{PLACE_ID}
-Headers:
-  X-Goog-Api-Key: {API_KEY}
-  X-Goog-FieldMask: displayName,regularOpeningHours,currentOpeningHours
-```
-
-### Output
-
-Writes `hours.json` to the project root. The format is defined in README.md.
-
-### Error handling
-
-- If a single business fails, log a warning and skip it — don't fail the entire run
-- If the API key is missing, exit with a clear error message
-- Rate limit: add a 200ms delay between API calls to be polite
-
-### Running
-
-```bash
-GOOGLE_PLACES_API_KEY=xxx node scripts/build.js
-```
-
-## Sample data for development
-
-Before the Google API is wired up, use this hardcoded `hours.json` for frontend development. These are real Arlington, MA businesses with plausible hours:
-
-```json
-[
-  {
-    "id": "robbins-library",
-    "name": "Robbins Library",
-    "category": "library",
-    "placeId": "",
-    "hours": {
-      "regular": {
-        "mon": { "open": "09:00", "close": "21:00" },
-        "tue": { "open": "09:00", "close": "21:00" },
-        "wed": { "open": "09:00", "close": "21:00" },
-        "thu": { "open": "09:00", "close": "21:00" },
-        "fri": { "open": "09:00", "close": "17:00" },
-        "sat": { "open": "10:00", "close": "17:00" },
-        "sun": { "open": "14:00", "close": "17:00" }
-      },
-      "overrides": [
-        { "date": "2026-05-25", "hours": null, "reason": "Memorial Day" }
-      ]
-    },
-    "lastUpdated": "2026-05-05T06:00:00Z"
-  },
-  {
-    "id": "fox-library",
-    "name": "Fox Library",
-    "category": "library",
-    "placeId": "",
-    "hours": {
-      "regular": {
-        "mon": { "open": "10:00", "close": "18:00" },
-        "tue": { "open": "10:00", "close": "18:00" },
-        "wed": { "open": "10:00", "close": "18:00" },
-        "thu": { "open": "10:00", "close": "20:00" },
-        "fri": { "open": "10:00", "close": "17:00" },
-        "sat": { "open": "10:00", "close": "14:00" },
-        "sun": null
-      },
-      "overrides": []
-    },
-    "lastUpdated": "2026-05-05T06:00:00Z"
-  },
-  {
-    "id": "capitol-theatre",
-    "name": "Capitol Theatre",
-    "category": "shop",
-    "placeId": "",
-    "hours": {
-      "regular": {
-        "mon": null,
-        "tue": { "open": "16:00", "close": "22:00" },
-        "wed": { "open": "16:00", "close": "22:00" },
-        "thu": { "open": "16:00", "close": "22:00" },
-        "fri": { "open": "14:00", "close": "23:00" },
-        "sat": { "open": "12:00", "close": "23:00" },
-        "sun": { "open": "12:00", "close": "20:00" }
-      },
-      "overrides": []
-    },
-    "lastUpdated": "2026-05-05T06:00:00Z"
-  },
-  {
-    "id": "menotomy-grill",
-    "name": "Menotomy Grill & Tavern",
-    "category": "restaurant",
-    "placeId": "",
-    "hours": {
-      "regular": {
-        "mon": { "open": "11:30", "close": "21:00" },
-        "tue": { "open": "11:30", "close": "21:00" },
-        "wed": { "open": "11:30", "close": "21:00" },
-        "thu": { "open": "11:30", "close": "21:00" },
-        "fri": { "open": "11:30", "close": "22:00" },
-        "sat": { "open": "11:30", "close": "22:00" },
-        "sun": { "open": "11:30", "close": "21:00" }
-      },
-      "overrides": []
-    },
-    "lastUpdated": "2026-05-05T06:00:00Z"
-  },
-  {
-    "id": "tango-mango",
-    "name": "Tango Mango",
-    "category": "restaurant",
-    "placeId": "",
-    "hours": {
-      "regular": {
-        "mon": { "open": "11:00", "close": "21:00" },
-        "tue": { "open": "11:00", "close": "21:00" },
-        "wed": { "open": "11:00", "close": "21:00" },
-        "thu": { "open": "11:00", "close": "21:00" },
-        "fri": { "open": "11:00", "close": "21:30" },
-        "sat": { "open": "11:00", "close": "21:30" },
-        "sun": { "open": "12:00", "close": "21:00" }
-      },
-      "overrides": []
-    },
-    "lastUpdated": "2026-05-05T06:00:00Z"
-  },
-  {
-    "id": "break-away",
-    "name": "Break Away",
-    "category": "restaurant",
-    "placeId": "",
-    "hours": {
-      "regular": {
-        "mon": { "open": "07:00", "close": "14:00" },
-        "tue": { "open": "07:00", "close": "14:00" },
-        "wed": { "open": "07:00", "close": "14:00" },
-        "thu": { "open": "07:00", "close": "14:00" },
-        "fri": { "open": "07:00", "close": "14:00" },
-        "sat": { "open": "07:00", "close": "14:00" },
-        "sun": { "open": "07:00", "close": "14:00" }
-      },
-      "overrides": []
-    },
-    "lastUpdated": "2026-05-05T06:00:00Z"
-  },
-  {
-    "id": "arlington-five-and-dime",
-    "name": "Arlington Five & Dime",
-    "category": "shop",
-    "placeId": "",
-    "hours": {
-      "regular": {
-        "mon": { "open": "10:00", "close": "18:00" },
-        "tue": { "open": "10:00", "close": "18:00" },
-        "wed": { "open": "10:00", "close": "18:00" },
-        "thu": { "open": "10:00", "close": "18:00" },
-        "fri": { "open": "10:00", "close": "18:00" },
-        "sat": { "open": "10:00", "close": "17:00" },
-        "sun": null
-      },
-      "overrides": []
-    },
-    "lastUpdated": "2026-05-05T06:00:00Z"
-  },
-  {
-    "id": "kelines",
-    "name": "Keline's",
-    "category": "restaurant",
-    "placeId": "",
-    "hours": {
-      "regular": {
-        "mon": null,
-        "tue": { "open": "11:00", "close": "20:00" },
-        "wed": { "open": "11:00", "close": "20:00" },
-        "thu": { "open": "11:00", "close": "20:00" },
-        "fri": { "open": "11:00", "close": "20:00" },
-        "sat": { "open": "11:00", "close": "20:00" },
-        "sun": { "open": "11:00", "close": "19:00" }
-      },
-      "overrides": []
-    },
-    "lastUpdated": "2026-05-05T06:00:00Z"
-  },
-  {
-    "id": "arlington-pet-shop",
-    "name": "Arlington Pet Shop",
-    "category": "shop",
-    "placeId": "",
-    "hours": {
-      "regular": {
-        "mon": { "open": "10:00", "close": "18:00" },
-        "tue": { "open": "10:00", "close": "18:00" },
-        "wed": { "open": "10:00", "close": "18:00" },
-        "thu": { "open": "10:00", "close": "18:00" },
-        "fri": { "open": "10:00", "close": "18:00" },
-        "sat": { "open": "10:00", "close": "17:00" },
-        "sun": { "open": "11:00", "close": "16:00" }
-      },
-      "overrides": []
-    },
-    "lastUpdated": "2026-05-05T06:00:00Z"
-  },
-  {
-    "id": "middlesex-bank",
-    "name": "Middlesex Savings Bank",
-    "category": "shop",
-    "placeId": "",
-    "hours": {
-      "regular": {
-        "mon": { "open": "08:30", "close": "16:00" },
-        "tue": { "open": "08:30", "close": "16:00" },
-        "wed": { "open": "08:30", "close": "16:00" },
-        "thu": { "open": "08:30", "close": "18:00" },
-        "fri": { "open": "08:30", "close": "16:00" },
-        "sat": { "open": "08:30", "close": "12:00" },
-        "sun": null
-      },
-      "overrides": [
-        { "date": "2026-05-25", "hours": null, "reason": "Memorial Day" }
-      ]
-    },
-    "lastUpdated": "2026-05-05T06:00:00Z"
-  }
-]
-```
-
-Start by building the frontend against this sample data. Get the swipe interaction, filters, and status computation working first. The build script is a separate task.
+The hours-parsing logic (`parseRegularHours`, `parseOverrides`) lives in `scripts/lib/hours-parser.js` — shared by anything that calls Google Places Details, don't reimplement it inline.
 
 ## Things to avoid
 
@@ -409,4 +146,4 @@ Start by building the frontend against this sample data. Get the swipe interacti
 - No maps
 - No analytics or tracking
 - No "last updated 5 minutes ago" toast notifications — the timestamp at the bottom is sufficient
-- No animations on the list itself (filter show/hide is instant). The only animation is the swipe gesture.
+- No animations anywhere — filter show/hide and row tap-to-expand are both instant.

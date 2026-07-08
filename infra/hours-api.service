@@ -1,0 +1,30 @@
+# Template systemd unit for the Edit-mode API proxy (scripts/api-server.js).
+# Not deployed automatically by any script in this repo — install once,
+# manually, on the droplet:
+#
+#   sudo cp infra/hours-api.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now hours-api
+#
+# Expects the app already rsynced to /var/www/hours-api/ (see
+# scripts/deploy-api.sh) and a runtime .env at /var/www/hours-api/.env
+# containing GOOGLE_PLACES_API_KEY, API_PORT, APP_SHARED_SECRET,
+# ALLOWED_ORIGIN. Adjust User=/paths if your droplet layout differs.
+
+[Unit]
+Description=Hours PWA edit-mode API proxy
+After=network.target
+
+[Service]
+Type=simple
+User=hours-api
+WorkingDirectory=/var/www/hours-api
+ExecStart=/usr/bin/env node /var/www/hours-api/api-server.js
+EnvironmentFile=/var/www/hours-api/.env
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

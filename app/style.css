@@ -52,17 +52,40 @@ html, body {
   left: 0;
   right: 0;
   z-index: 10;
-  display: flex;
-  align-items: center;
   padding-top: env(safe-area-inset-top);
   background: var(--bar-bg);
   border-bottom: 1px solid var(--separator);
   overscroll-behavior: none;
 }
 
+#title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--separator);
+}
+
+#app-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#filter-row {
+  display: flex;
+  align-items: center;
+}
+
+/* Filtering a list that's hidden behind the Edit panel makes no sense */
+#filter-bar.editing #filter-row {
+  display: none;
+}
+
 #filter-scroll {
   flex: 1;
   min-width: 0;
+  min-height: 41px; /* border-box height with a rendered .filter-btn present,
+    so the bar doesn't change height between zero and one-or-more pills */
   display: flex;
   gap: 6px;
   padding: 8px 16px;
@@ -121,10 +144,27 @@ html, body {
   display: block;
 }
 
+#edit-btn {
+  flex-shrink: 0;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+#edit-btn.active {
+  color: var(--open);
+}
+
 /* Business list */
 #business-list {
   position: fixed;
-  top: calc(41px + env(safe-area-inset-top));
+  top: calc(78px + env(safe-area-inset-top));
   bottom: calc(28px + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
@@ -138,6 +178,186 @@ html, body {
 
 #business-list::-webkit-scrollbar {
   display: none;
+}
+
+/* Onboarding empty state */
+.onboarding-empty {
+  padding: 64px 32px 0;
+  text-align: center;
+}
+
+.onboarding-empty p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.cta-btn {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 28px;
+  border-radius: 999px;
+  border: none;
+  background: var(--filter-active-bg);
+  color: var(--filter-active-text);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Edit panel */
+#edit-panel {
+  position: fixed;
+  /* Shorter than #business-list's offset — the filter row is hidden
+     while editing, so the bar above is just the title row. */
+  top: calc(37px + env(safe-area-inset-top));
+  bottom: calc(28px + env(safe-area-inset-bottom));
+  left: 0;
+  right: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  overscroll-behavior-y: contain;
+  background: var(--bg);
+}
+
+#edit-panel::-webkit-scrollbar {
+  display: none;
+}
+
+#edit-search-row {
+  display: flex;
+  gap: 6px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--separator);
+}
+
+#edit-zip {
+  width: 110px;
+  flex-shrink: 0;
+}
+
+#edit-query {
+  flex: 1;
+  min-width: 0;
+}
+
+#edit-zip,
+#edit-query {
+  font-family: inherit;
+  font-size: max(16px, 1em); /* iOS zooms the viewport on focus below 16px */
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--filter-border);
+  background: var(--filter-bg);
+  color: var(--text);
+}
+
+#edit-search-btn {
+  flex-shrink: 0;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--filter-border);
+  background: var(--filter-bg);
+  color: var(--text);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#edit-current-label {
+  margin-top: 14px;
+  padding: 10px 16px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+#edit-results,
+#edit-current {
+  list-style: none;
+}
+
+.edit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--separator);
+}
+
+.edit-row-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.edit-row-name {
+  font-size: 12px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.edit-row-address {
+  font-size: 11px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.edit-category-select,
+.edit-category-new-input {
+  flex-shrink: 0;
+  font-family: inherit;
+  padding: 4px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--filter-border);
+  background: var(--filter-bg);
+  color: var(--text);
+  width: 90px;
+}
+
+.edit-category-select {
+  font-size: 11px; /* a <select> opens a native picker, not the keyboard —
+    no iOS zoom-on-focus risk, so it can stay small like other pills */
+}
+
+.edit-category-new-input {
+  font-size: max(16px, 1em); /* this one is a text field — same zoom risk */
+}
+
+.edit-toggle-btn {
+  flex-shrink: 0;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--filter-border);
+  background: var(--filter-bg);
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.edit-toggle-btn.added {
+  background: var(--filter-active-bg);
+  color: var(--filter-active-text);
+  border-color: var(--filter-active-bg);
+}
+
+.edit-toggle-btn.remove {
+  color: var(--closed);
 }
 
 /* Category header */

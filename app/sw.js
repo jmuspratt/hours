@@ -1,4 +1,4 @@
-const CACHE = 'hours-20260702155505';
+const CACHE = 'hours-20260708091724';
 const APP_SHELL = ["/", "/index.html", "/style.css", "/app.js", "/sw.js"];
 
 self.addEventListener("install", (e) => {
@@ -27,20 +27,9 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
 
-  // Stale-while-revalidate for hours.json
-  if (url.pathname.endsWith("/hours.json")) {
-    e.respondWith(
-      caches.open(CACHE).then(async (cache) => {
-        const cached = await cache.match(e.request);
-        const fetchPromise = fetch(e.request)
-          .then((res) => {
-            if (res.ok) cache.put(e.request, res.clone());
-            return res;
-          })
-          .catch(() => null);
-        return cached ?? (await fetchPromise);
-      }),
-    );
+  // Edit-mode API calls are dynamic/authenticated — never cache, always network
+  if (url.pathname.startsWith("/api/")) {
+    e.respondWith(fetch(e.request));
     return;
   }
 
