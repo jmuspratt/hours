@@ -142,7 +142,8 @@ When no filter is active, businesses are grouped by category (alphabetical) with
 ├── scripts/
 │   ├── build.js            # Fetches hours from Google API and writes app/hours.json
 │   ├── deploy.sh           # Bumps SW cache version and rsyncs app/ to server
-│   └── search-server.js    # Local server for looking up Google Place IDs
+│   ├── search-server.js    # Local server for looking up Google Place IDs
+│   └── start.js            # Local static server for previewing app/
 ├── tools/
 │   └── search.html         # Place ID search UI (served by search-server.js)
 ├── businesses.json         # Config: list of placeIds + categories
@@ -187,10 +188,11 @@ DEPLOY_PATH=user@server:/path/to/web/root
 npm run build
 ```
 
-4. Serve the `app/` directory (any static server works):
+4. Serve the `app/` directory:
 
 ```bash
-npx serve app/
+npm run start
+# → http://localhost:3000
 ```
 
 5. Open in Safari on iPhone → Share → Add to Home Screen.
