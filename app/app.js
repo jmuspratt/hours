@@ -252,10 +252,14 @@ function renderList() {
     return;
   }
 
+  const visible = openNowActive
+    ? currentBusinesses.filter((b) => getStatus(b, now).isOpen)
+    : currentBusinesses;
+
   if (activeFilters.size === 0) {
     // Group by category (alphabetized), businesses sorted by name within each group
     const groups = {};
-    for (const biz of currentBusinesses) {
+    for (const biz of visible) {
       (groups[biz.category] ??= []).push(biz);
     }
     for (const cat of Object.keys(groups).sort()) {
@@ -271,7 +275,7 @@ function renderList() {
     }
   } else {
     // Flat filtered list, sorted by name
-    const filtered = currentBusinesses
+    const filtered = visible
       .filter((b) => activeFilters.has(b.category))
       .sort((a, b) => a.name.localeCompare(b.name));
     for (const biz of filtered) {
@@ -281,7 +285,7 @@ function renderList() {
 
   document
     .getElementById("clear-btn")
-    .classList.toggle("visible", activeFilters.size > 0);
+    .classList.toggle("visible", activeFilters.size > 0 || openNowActive);
 }
 
 // Single entry point for "something changed, redraw whatever's visible."
@@ -305,6 +309,7 @@ function render(businesses) {
 // --- Filters ---
 
 let activeFilters = new Set();
+let openNowActive = false;
 
 function applyFilters() {
   renderList();
@@ -328,8 +333,18 @@ document.getElementById("filter-bar").addEventListener("click", (e) => {
   applyFilters();
 });
 
+document.getElementById("open-now-btn").addEventListener("click", () => {
+  openNowActive = !openNowActive;
+  document
+    .getElementById("open-now-btn")
+    .classList.toggle("active", openNowActive);
+  applyFilters();
+});
+
 document.getElementById("clear-btn").addEventListener("click", () => {
   activeFilters.clear();
+  openNowActive = false;
+  document.getElementById("open-now-btn").classList.remove("active");
   document
     .querySelectorAll(".filter-btn")
     .forEach((b) => b.classList.remove("active"));

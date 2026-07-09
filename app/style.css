@@ -11,6 +11,33 @@
   --filter-active-text: #ffffff;
   --separator: #e8e8e8;
   --bar-bg: #ffffff;
+  --open-text: #ffffff; /* text against an --open-colored background; same in both themes */
+  --link-text: #999;
+
+  --title-bar-height: 45px;
+
+  /* Font sizes */
+  --font-size-10: 10px;
+  --font-size-11: 11px;
+  --font-size-12: 12px;
+  --font-size-13: 13px;
+  --font-size-14: 14px;
+  --font-size-zoom-safe: 16px; /* min size to prevent iOS zoom-on-focus */
+
+  /* Spacing */
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-5: 5px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-14: 14px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-28: 28px;
+  --space-32: 32px;
+  --space-64: 64px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -25,8 +52,9 @@
     --filter-border: #444;
     --filter-active-bg: #e8e8e8;
     --filter-active-text: #1a1a1a;
-    --separator: #2e2e2e;
+    --separator: #2a2a2a;
     --bar-bg: #1a1a1a;
+    --link-text: #777;
   }
 }
 
@@ -62,12 +90,14 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
+  padding: 0 var(--space-16);
+  height: var(--title-bar-height);
+  background: var(--bg-alt);
   border-bottom: 1px solid var(--separator);
 }
 
 #app-title {
-  font-size: 14px;
+  font-size: var(--font-size-14);
   font-weight: 600;
 }
 
@@ -77,20 +107,22 @@ html, body {
 }
 
 /* Filtering a list that's hidden behind the Edit panel makes no sense,
-   and an empty list has no categories to filter by either */
+   and an empty list has no categories to filter by either — this also
+   covers #open-now-btn for free, since it now lives inside this row */
 #filter-bar.editing #filter-row,
 #filter-bar.empty-state #filter-row {
   display: none;
 }
 
 #filter-scroll {
+  border-right: 1px solid var(--filter-border);
   flex: 1;
   min-width: 0;
   min-height: 41px; /* border-box height with a rendered .filter-btn present,
     so the bar doesn't change height between zero and one-or-more pills */
   display: flex;
-  gap: 6px;
-  padding: 8px 16px;
+  gap: var(--space-6);
+  padding: var(--space-12) var(--space-16);
   overflow-x: auto;
   scrollbar-width: none;
   overscroll-behavior-x: contain;
@@ -103,9 +135,9 @@ html, body {
 
 .filter-btn {
   font-family: inherit;
-  font-size: 12px;
+  font-size: var(--font-size-12);
   font-weight: 400;
-  padding: 4px 10px;
+  padding: var(--space-4) var(--space-10);
   border-radius: 12px;
   border: 1px solid var(--filter-border);
   background: var(--filter-bg);
@@ -123,21 +155,46 @@ html, body {
   border-color: var(--filter-active-bg);
 }
 
+#open-now-btn {
+  flex-shrink: 0;
+  font-family: inherit;
+  font-size: var(--font-size-12);
+  font-weight: 400;
+  margin-right: var(--space-16);
+  margin-left: var(--space-16);
+  padding: var(--space-4) var(--space-10);
+  border-radius: 12px;
+  border: 1px solid var(--filter-border);
+  background: var(--filter-bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+#open-now-btn.active {
+  background: var(--open);
+  border-color: var(--open);
+  color: var(--open-text);
+}
+
+#title-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-20);
+}
+
 #clear-btn {
   display: none;
   flex-shrink: 0;
   font-family: inherit;
-  font-size: 12px;
-  font-weight: 500;
-  padding: 8px 14px;
+  font-size: var(--font-size-12);
+  font-weight: 400;
   border: none;
-  border-left: 1px solid var(--separator);
-  border-radius: 0;
-  background: var(--bar-bg);
+  background: none;
   color: var(--text-muted);
   cursor: pointer;
-  white-space: nowrap;
-  align-self: stretch;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
@@ -149,7 +206,7 @@ html, body {
 #edit-btn {
   flex-shrink: 0;
   font-family: inherit;
-  font-size: 12px;
+  font-size: var(--font-size-12);
   font-weight: 400;
   border: none;
   background: none;
@@ -166,7 +223,7 @@ html, body {
 /* Business list */
 #business-list {
   position: fixed;
-  top: calc(78px + env(safe-area-inset-top));
+  top: calc(var(--title-bar-height) + 50px + env(safe-area-inset-top));
   bottom: env(safe-area-inset-bottom);
   left: 0;
   right: 0;
@@ -185,27 +242,27 @@ html, body {
 /* Filter row is hidden (see #filter-bar.empty-state above), so the bar
    above is shorter — match #edit-panel's offset for the same reason */
 #business-list.empty-state {
-  top: calc(35px + env(safe-area-inset-top));
+  top: calc(var(--title-bar-height) + 1px + env(safe-area-inset-top));
 }
 
 /* Onboarding empty state */
 .onboarding-empty {
-  padding: 64px 32px 0;
+  padding: var(--space-64) var(--space-32) 0;
   text-align: center;
 }
 
 .onboarding-empty p {
-  font-size: 13px;
+  font-size: var(--font-size-13);
   color: var(--text-muted);
-  margin-bottom: 16px;
-  line-height: 1.4;;
+  margin-bottom: var(--space-16);
+  line-height: 1.4;
 }
 
 .cta-btn {
   font-family: inherit;
-  font-size: 14px;
+  font-size: var(--font-size-14);
   font-weight: 600;
-  padding: 10px 28px;
+  padding: var(--space-10) var(--space-28);
   border-radius: 999px;
   border: none;
   background: var(--filter-active-bg);
@@ -220,7 +277,7 @@ html, body {
   position: fixed;
   /* Shorter than #business-list's offset — the filter row is hidden
      while editing, so the bar above is just the title row. */
-  top: calc(35px + env(safe-area-inset-top));
+  top: calc(var(--title-bar-height) + 1px + env(safe-area-inset-top));
   bottom: env(safe-area-inset-bottom);
   left: 0;
   right: 0;
@@ -238,17 +295,17 @@ html, body {
 
 #edit-tabs {
   display: flex;
-  gap: 6px;
-  padding: 10px 16px;
+  gap: var(--space-6);
+  padding: var(--space-10) var(--space-16);
   border-bottom: 1px solid var(--separator);
 }
 
 .edit-tab-btn {
   flex: 1;
   font-family: inherit;
-  font-size: 12px;
+  font-size: var(--font-size-12);
   font-weight: 500;
-  padding: 8px 12px;
+  padding: var(--space-8) var(--space-12);
   border-radius: 999px;
   border: 1px solid var(--filter-border);
   background: var(--filter-bg);
@@ -267,8 +324,8 @@ html, body {
 
 #edit-search-row {
   display: flex;
-  gap: 6px;
-  padding: 10px 16px;
+  gap: var(--space-6);
+  padding: var(--space-10) var(--space-16);
   border-bottom: 1px solid var(--separator);
 }
 
@@ -285,8 +342,8 @@ html, body {
 #edit-zip,
 #edit-query {
   font-family: inherit;
-  font-size: max(16px, 1em); /* iOS zooms the viewport on focus below 16px */
-  padding: 6px 8px;
+  font-size: max(var(--font-size-zoom-safe), 1em); /* iOS zooms the viewport on focus below 16px */
+  padding: var(--space-6) var(--space-8);
   border-radius: 8px;
   border: 1px solid var(--filter-border);
   background: var(--filter-bg);
@@ -296,9 +353,9 @@ html, body {
 #edit-search-btn {
   flex-shrink: 0;
   font-family: inherit;
-  font-size: 12px;
+  font-size: var(--font-size-12);
   font-weight: 500;
-  padding: 6px 12px;
+  padding: var(--space-6) var(--space-12);
   border-radius: 999px;
   border: 1px solid var(--filter-border);
   background: var(--filter-bg);
@@ -315,8 +372,8 @@ html, body {
 .edit-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
+  gap: var(--space-8);
+  padding: var(--space-10) var(--space-16);
   border-bottom: 1px solid var(--separator);
 }
 
@@ -326,7 +383,7 @@ html, body {
 }
 
 .edit-row-name {
-  font-size: 12px;
+  font-size: var(--font-size-12);
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -334,7 +391,7 @@ html, body {
 }
 
 .edit-row-address {
-  font-size: 11px;
+  font-size: var(--font-size-11);
   color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -345,7 +402,7 @@ html, body {
 .edit-category-new-input {
   flex-shrink: 0;
   font-family: inherit;
-  padding: 4px 6px;
+  padding: var(--space-4) var(--space-6);
   border-radius: 8px;
   border: 1px solid var(--filter-border);
   background: var(--filter-bg);
@@ -354,20 +411,20 @@ html, body {
 }
 
 .edit-category-select {
-  font-size: 11px; /* a <select> opens a native picker, not the keyboard —
+  font-size: var(--font-size-11); /* a <select> opens a native picker, not the keyboard —
     no iOS zoom-on-focus risk, so it can stay small like other pills */
 }
 
 .edit-category-new-input {
-  font-size: max(16px, 1em); /* this one is a text field — same zoom risk */
+  font-size: max(var(--font-size-zoom-safe), 1em); /* this one is a text field — same zoom risk */
 }
 
 .edit-toggle-btn {
   flex-shrink: 0;
   font-family: inherit;
-  font-size: 12px;
+  font-size: var(--font-size-12);
   font-weight: 500;
-  padding: 4px 10px;
+  padding: var(--space-4) var(--space-10);
   border-radius: 12px;
   border: 1px solid var(--filter-border);
   background: var(--filter-bg);
@@ -393,9 +450,9 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 1;
-  margin-top: 20px;
-  padding: 10px 16px 10px;
-  font-size: 10px;
+  margin-top: var(--space-20);
+  padding: var(--space-14) var(--space-16) var(--space-10);
+  font-size: var(--font-size-10);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -414,14 +471,14 @@ html, body {
 }
 
 .biz-main {
-  padding: 14px 16px;
+  padding: var(--space-14) var(--space-16);
   background: var(--bg);
 }
 
 .biz-header {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: var(--space-8);
 }
 
 .biz-chevron {
@@ -439,7 +496,7 @@ html, body {
 }
 
 .biz-name {
-  font-size: 12px;
+  font-size: var(--font-size-12);
   font-weight: 500;
   line-height: 1.3;
   flex: 1;
@@ -450,7 +507,7 @@ html, body {
 }
 
 .biz-status {
-  font-size: 12px;
+  font-size: var(--font-size-12);
   color: var(--text-muted);
   line-height: 1.3;
   white-space: nowrap;
@@ -459,7 +516,7 @@ html, body {
 
 .biz-accordion {
   display: none;
-  padding-top: 6px;
+  padding-top: var(--space-6);
 }
 
 .biz-row.expanded .biz-accordion {
@@ -480,9 +537,9 @@ html, body {
 .biz-schedule {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0 10px;
-  margin-top: 5px;
-  font-size: 12px;
+  gap: 0 var(--space-10);
+  margin-top: var(--space-5);
+  font-size: var(--font-size-12);
   color: var(--text-muted);
   line-height: 1.7;
 }
@@ -490,7 +547,7 @@ html, body {
 .schedule-override-rule {
   grid-column: 1 / -1;
   border-top: 1px solid var(--separator);
-  margin: 2px 0;
+  margin: var(--space-2) 0;
 }
 
 .schedule-override {
@@ -502,12 +559,12 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  gap: 8px;
-  margin-top: 6px;
+  gap: var(--space-8);
+  margin-top: var(--space-6);
 }
 
 .biz-updated {
-  font-size: 11px;
+  font-size: var(--font-size-11);
   color: var(--text-muted);
   white-space: nowrap;
 }
@@ -516,29 +573,21 @@ html, body {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  gap: 6px;
+  gap: var(--space-6);
 }
 
 .biz-call,
 .biz-maps {
   display: inline-block;
   font-family: inherit;
-  font-size: 12px;
-  font-weight: 500;
-  color: #999;
+  font-size: var(--font-size-12);
+  font-weight: 400;
+  color: var(--link-text);
   text-decoration: none;
-  padding: 2px 6px;
-  border: 1px solid #ccc;
+  padding: var(--space-2) var(--space-6);
+  border: 1px solid var(--filter-border);
   border-radius: 4px;
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  .biz-call,
-  .biz-maps {
-    color: #777;
-    border-color: #444;
-  }
 }
