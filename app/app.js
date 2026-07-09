@@ -217,8 +217,8 @@ function renderList() {
   if (currentBusinesses.length === 0) {
     list.innerHTML = `
       <li class="onboarding-empty">
-        <p>No businesses yet.</p>
-        <button id="onboarding-add-btn" class="cta-btn">Add Businesses</button>
+        <p>Hours lets you see when your favorite restaurants, and shops, and other businesses are open. Start by building a list of businesses and grouping them by category.</p>
+        <button id="onboarding-add-btn" class="cta-btn">Add businesses...</button>
       </li>
     `;
     document.getElementById("clear-btn").classList.remove("visible");
@@ -313,7 +313,7 @@ document.getElementById("clear-btn").addEventListener("click", () => {
 
 document.getElementById("business-list").addEventListener("click", (e) => {
   if (e.target.closest("#onboarding-add-btn")) {
-    enterEditMode();
+    enterEditMode("search");
     return;
   }
   if (e.target.closest("a")) return;
@@ -358,7 +358,7 @@ function loadData() {
   }
 
   // No personal list yet on this device — nothing to seed from anymore.
-  // renderList() shows the "Add Businesses" onboarding state for an empty list.
+  // renderList() shows the onboarding empty state for an empty list.
   render([]);
 }
 
@@ -434,7 +434,15 @@ function requestLocationOnce() {
   );
 }
 
-function enterEditMode() {
+function switchEditTab(tab) {
+  document
+    .querySelectorAll(".edit-tab-btn")
+    .forEach((btn) => btn.classList.toggle("active", btn.dataset.tab === tab));
+  document.getElementById("edit-tab-current").hidden = tab !== "current";
+  document.getElementById("edit-tab-search").hidden = tab !== "search";
+}
+
+function enterEditMode(tab = "current") {
   pendingAdds = new Map();
   pendingRemoves = new Set();
   lastSearchResults = [];
@@ -443,6 +451,7 @@ function enterEditMode() {
   document.getElementById("filter-bar").classList.add("editing");
   document.getElementById("business-list").hidden = true;
   document.getElementById("edit-panel").hidden = false;
+  switchEditTab(tab);
   scheduleRender();
 
   if (userLocation) searchBusinesses();
@@ -664,6 +673,11 @@ document.getElementById("edit-btn").addEventListener("click", () => {
   } else {
     exitEditMode();
   }
+});
+
+document.getElementById("edit-tabs").addEventListener("click", (e) => {
+  const btn = e.target.closest(".edit-tab-btn");
+  if (btn) switchEditTab(btn.dataset.tab);
 });
 
 document

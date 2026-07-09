@@ -190,6 +190,7 @@ html, body {
   font-size: 13px;
   color: var(--text-muted);
   margin-bottom: 16px;
+  line-height: 1.4;;
 }
 
 .cta-btn {
@@ -225,6 +226,35 @@ html, body {
 
 #edit-panel::-webkit-scrollbar {
   display: none;
+}
+
+#edit-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--separator);
+}
+
+.edit-tab-btn {
+  flex: 1;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--filter-border);
+  background: var(--filter-bg);
+  color: var(--text);
+  cursor: pointer;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.edit-tab-btn.active {
+  background: var(--filter-active-bg);
+  color: var(--filter-active-text);
+  border-color: var(--filter-active-bg);
 }
 
 #edit-search-row {
@@ -267,16 +297,6 @@ html, body {
   color: var(--text);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-}
-
-#edit-current-label {
-  margin-top: 14px;
-  padding: 10px 16px 6px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
 }
 
 #edit-results,

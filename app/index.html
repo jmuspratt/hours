@@ -25,14 +25,21 @@
   </div>
   <ul id="business-list"></ul>
   <div id="edit-panel" hidden>
-    <div id="edit-search-row">
-      <input id="edit-query" type="text" placeholder="Search to add...">
-      <input id="edit-zip" type="text" inputmode="numeric" placeholder="Zip (optional)" maxlength="10">
-      <button id="edit-search-btn">Search</button>
+    <div id="edit-tabs">
+      <button class="edit-tab-btn active" data-tab="current">Saved</button>
+      <button class="edit-tab-btn" data-tab="search">Add...</button>
     </div>
-    <ul id="edit-results"></ul>
-    <div id="edit-current-label">Your businesses</div>
-    <ul id="edit-current"></ul>
+    <div id="edit-tab-current" class="edit-tab-panel">
+      <ul id="edit-current"></ul>
+    </div>
+    <div id="edit-tab-search" class="edit-tab-panel" hidden>
+      <div id="edit-search-row">
+        <input id="edit-query" type="text" placeholder="Search to add...">
+        <input id="edit-zip" type="text" inputmode="numeric" placeholder="Zip (optional)" maxlength="10">
+        <button id="edit-search-btn">Search</button>
+      </div>
+      <ul id="edit-results"></ul>
+    </div>
   </div>
   <p id="updated-label"></p>
   <script src="app.js" type="module"></script>
