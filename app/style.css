@@ -76,8 +76,10 @@ html, body {
   align-items: center;
 }
 
-/* Filtering a list that's hidden behind the Edit panel makes no sense */
-#filter-bar.editing #filter-row {
+/* Filtering a list that's hidden behind the Edit panel makes no sense,
+   and an empty list has no categories to filter by either */
+#filter-bar.editing #filter-row,
+#filter-bar.empty-state #filter-row {
   display: none;
 }
 
@@ -165,7 +167,7 @@ html, body {
 #business-list {
   position: fixed;
   top: calc(78px + env(safe-area-inset-top));
-  bottom: calc(28px + env(safe-area-inset-bottom));
+  bottom: env(safe-area-inset-bottom);
   left: 0;
   right: 0;
   overflow-y: auto;
@@ -178,6 +180,12 @@ html, body {
 
 #business-list::-webkit-scrollbar {
   display: none;
+}
+
+/* Filter row is hidden (see #filter-bar.empty-state above), so the bar
+   above is shorter — match #edit-panel's offset for the same reason */
+#business-list.empty-state {
+  top: calc(35px + env(safe-area-inset-top));
 }
 
 /* Onboarding empty state */
@@ -212,8 +220,8 @@ html, body {
   position: fixed;
   /* Shorter than #business-list's offset — the filter row is hidden
      while editing, so the bar above is just the title row. */
-  top: calc(37px + env(safe-area-inset-top));
-  bottom: calc(28px + env(safe-area-inset-bottom));
+  top: calc(35px + env(safe-area-inset-top));
+  bottom: env(safe-area-inset-bottom);
   left: 0;
   right: 0;
   overflow-y: auto;
@@ -416,6 +424,20 @@ html, body {
   gap: 8px;
 }
 
+.biz-chevron {
+  align-self: center;
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-top: 1px solid var(--text-muted);
+  border-right: 1px solid var(--text-muted);
+  transform: rotate(45deg);
+}
+
+.biz-row.expanded .biz-chevron {
+  transform: rotate(135deg);
+}
+
 .biz-name {
   font-size: 12px;
   font-weight: 500;
@@ -475,12 +497,26 @@ html, body {
   font-style: italic;
 }
 
-/* Contact links (phone + maps) */
+/* Footer: per-business updated stamp (left) + contact links (right) */
+.biz-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.biz-updated {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
 .biz-contact {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-start;
   gap: 6px;
-  margin-top: 6px;
 }
 
 .biz-call,
@@ -505,19 +541,4 @@ html, body {
     color: #777;
     border-color: #444;
   }
-}
-
-/* Updated label */
-#updated-label {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 6px 16px;
-  padding-bottom: calc(6px + env(safe-area-inset-bottom));
-  font-size: 12px;
-  color: var(--text-muted);
-  text-align: center;
-  background: var(--bar-bg);
-  border-top: 1px solid var(--separator);
 }

@@ -155,6 +155,22 @@ function categoryLabel(cat) {
 
 let currentBusinesses = [];
 
+// Per-business freshness, not a global one — different businesses can have
+// been fetched at different times (e.g. one just added, others days old),
+// so a single app-wide "Updated X ago" badge was actively misleading.
+function relativeUpdatedLabel(isoTimestamp) {
+  if (!isoTimestamp) return "";
+  const diff = Date.now() - new Date(isoTimestamp).getTime();
+  const mins = Math.floor(diff / 60000);
+  const hours = Math.floor(mins / 60);
+  const days = Math.floor(hours / 24);
+
+  if (mins < 2) return "Updated just now";
+  if (mins < 60) return `Updated ${mins} minutes ago`;
+  if (hours < 24) return `Updated ${hours} hour${hours > 1 ? "s" : ""} ago`;
+  return `Updated ${days} day${days > 1 ? "s" : ""} ago`;
+}
+
 function buildRow(business, now) {
   const { label } = getStatus(business, now);
   const scheduleHTML = buildScheduleHTML(business);
@@ -169,6 +185,7 @@ function buildRow(business, now) {
     mapsURL && business.address
       ? `<a class="biz-maps" href="${mapsURL}" target="_blank">${business.address}</a>`
       : "";
+  const updatedLabel = relativeUpdatedLabel(business.lastUpdated);
 
   const li = document.createElement("li");
   li.className = "biz-row";
@@ -176,12 +193,16 @@ function buildRow(business, now) {
   li.innerHTML = `
     <div class="biz-main">
       <div class="biz-header">
+        <span class="biz-chevron"></span>
         <div class="biz-name">${business.name}</div>
         <div class="biz-status">${label}</div>
       </div>
       <div class="biz-accordion">
         ${scheduleHTML}
-        <div class="biz-contact">${phoneHTML}${mapsHTML}</div>
+        <div class="biz-footer">
+          <div class="biz-contact">${phoneHTML}${mapsHTML}</div>
+          <span class="biz-updated">${updatedLabel}</span>
+        </div>
       </div>
     </div>`;
 
@@ -214,15 +235,20 @@ function renderList() {
   const now = new Date();
   list.innerHTML = "";
 
-  if (currentBusinesses.length === 0) {
+  const isEmpty = currentBusinesses.length === 0;
+  document
+    .getElementById("filter-bar")
+    .classList.toggle("empty-state", isEmpty);
+  list.classList.toggle("empty-state", isEmpty);
+
+  if (isEmpty) {
     list.innerHTML = `
       <li class="onboarding-empty">
-        <p>Hours lets you see when your favorite restaurants, and shops, and other businesses are open. Start by building a list of businesses and grouping them by category.</p>
+        <p>Track the open hours of your favorite restaurants and shops in one simple list.</p>
         <button id="onboarding-add-btn" class="cta-btn">Add businesses...</button>
       </li>
     `;
     document.getElementById("clear-btn").classList.remove("visible");
-    updateTimestamp();
     return;
   }
 
@@ -256,7 +282,6 @@ function renderList() {
   document
     .getElementById("clear-btn")
     .classList.toggle("visible", activeFilters.size > 0);
-  updateTimestamp();
 }
 
 // Single entry point for "something changed, redraw whatever's visible."
@@ -320,31 +345,6 @@ document.getElementById("business-list").addEventListener("click", (e) => {
   const row = e.target.closest(".biz-row");
   if (row) row.classList.toggle("expanded");
 });
-
-// --- Timestamp ---
-
-function updateTimestamp() {
-  const ts = localStorage.getItem(TIMESTAMP_KEY);
-  const el = document.getElementById("updated-label");
-  if (!ts) {
-    el.textContent = "";
-    return;
-  }
-
-  const diff = Date.now() - new Date(ts).getTime();
-  const mins = Math.floor(diff / 60000);
-  const hours = Math.floor(mins / 60);
-  const days = Math.floor(hours / 24);
-
-  let label;
-  if (mins < 2) label = "Updated just now";
-  else if (mins < 60) label = `Updated ${mins} minutes ago`;
-  else if (hours < 24)
-    label = `Updated ${hours} hour${hours > 1 ? "s" : ""} ago`;
-  else label = `Updated ${days} day${days > 1 ? "s" : ""} ago`;
-
-  el.textContent = label;
-}
 
 // --- Data loading ---
 
