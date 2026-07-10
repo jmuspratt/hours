@@ -7,6 +7,16 @@ const STALE_MS = 7 * 24 * 60 * 60 * 1000; // refresh tracked hours after a week
 const APP_SHARED_SECRET = "PMsvFX-f2jc7";
 const DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
+// iOS (and most browsers) keep separate localStorage for a plain browser
+// tab vs. an "Add to Home Screen" app at the same URL — so a list built up
+// in Safari won't be there once the Home Screen icon is added and opened.
+function isStandalone() {
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true
+  );
+}
+
 function slugify(name) {
   return name
     .toLowerCase()
@@ -232,22 +242,21 @@ function renderFilters() {
 
 function renderList() {
   const list = document.getElementById("business-list");
+  const onboarding = document.getElementById("onboarding");
   const now = new Date();
   list.innerHTML = "";
 
   const isEmpty = currentBusinesses.length === 0;
+  // Edit mode hides both regardless of emptiness — #edit-panel takes over.
+  const isEditing = !document.getElementById("edit-panel").hidden;
   document
     .getElementById("filter-bar")
     .classList.toggle("empty-state", isEmpty);
-  list.classList.toggle("empty-state", isEmpty);
+  list.hidden = isEditing || isEmpty;
+  onboarding.hidden = isEditing || !isEmpty;
 
   if (isEmpty) {
-    list.innerHTML = `
-      <li class="onboarding-empty">
-        <p>Track the open hours of your favorite restaurants and shops in one simple list.</p>
-        <button id="onboarding-add-btn" class="cta-btn">Add businesses...</button>
-      </li>
-    `;
+    onboarding.querySelector(".a2hs-hint").hidden = isStandalone();
     document.getElementById("clear-btn").classList.remove("visible");
     return;
   }
@@ -352,13 +361,13 @@ document.getElementById("clear-btn").addEventListener("click", () => {
 });
 
 document.getElementById("business-list").addEventListener("click", (e) => {
-  if (e.target.closest("#onboarding-add-btn")) {
-    enterEditMode("search");
-    return;
-  }
   if (e.target.closest("a")) return;
   const row = e.target.closest(".biz-row");
   if (row) row.classList.toggle("expanded");
+});
+
+document.getElementById("onboarding").addEventListener("click", (e) => {
+  if (e.target.closest("#onboarding-add-btn")) enterEditMode("search");
 });
 
 // --- Data loading ---
@@ -428,9 +437,9 @@ let userLocation = null; // { lat, lng } once geolocation resolves
 let locationRequested = false;
 let lastSearchResults = []; // so both edit-results and edit-current can re-render in sync
 
-// Best-effort, silent — requested once per page load. If granted and the
-// search fields are still empty, auto-runs a "nearby" search so Edit mode
-// shows something without the user typing anything. Falls back to manual
+// Best-effort, silent — requested once per page load. Only primes
+// userLocation so a later, user-initiated search can be biased by
+// distance; never fires a search on its own. Falls back to manual
 // zip/query entry if denied, unsupported, or slow.
 function requestLocationOnce() {
   if (locationRequested || !("geolocation" in navigator)) return;
@@ -438,9 +447,6 @@ function requestLocationOnce() {
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-      const zipEmpty = !document.getElementById("edit-zip").value.trim();
-      const queryEmpty = !document.getElementById("edit-query").value.trim();
-      if (zipEmpty && queryEmpty) searchBusinesses();
     },
     () => {
       // Denied or unavailable — manual zip/query entry still works.
@@ -463,22 +469,50 @@ function enterEditMode(tab = "current") {
   lastSearchResults = [];
   document.getElementById("edit-btn").textContent = "Save";
   document.getElementById("edit-btn").classList.add("active");
+  document.getElementById("edit-cancel-btn").hidden = false;
   document.getElementById("filter-bar").classList.add("editing");
   document.getElementById("business-list").hidden = true;
+  document.getElementById("onboarding").hidden = true;
   document.getElementById("edit-panel").hidden = false;
   switchEditTab(tab);
   scheduleRender();
 
-  if (userLocation) searchBusinesses();
-  else requestLocationOnce();
+  if (!userLocation) requestLocationOnce();
 }
 
-async function exitEditMode() {
-  document.getElementById("edit-btn").textContent = "Settings";
+// Shared UI teardown for both Save and Cancel — committing (or not) the
+// pending changes is the caller's job.
+function closeEditPanel() {
+  document.getElementById("edit-btn").textContent = "Manage";
   document.getElementById("edit-btn").classList.remove("active");
+  document.getElementById("edit-cancel-btn").hidden = true;
   document.getElementById("filter-bar").classList.remove("editing");
   document.getElementById("business-list").hidden = false;
   document.getElementById("edit-panel").hidden = true;
+}
+
+// Discards any staged adds/removes and closes the panel without touching
+// currentBusinesses or localStorage — the counterpart to Save.
+function cancelEditMode() {
+  pendingAdds = new Map();
+  pendingRemoves = new Set();
+  closeEditPanel();
+  scheduleRender();
+}
+
+async function exitEditMode() {
+  // Only pending adds need a network round-trip (to fetch hours/phone/address
+  // for the new placeIds) — removes are purely local. Keep the panel open
+  // with a "Saving…" state for that case instead of closing to the main list
+  // and leaving it static until the fetch resolves.
+  const isSaving = pendingAdds.size > 0;
+  if (isSaving) {
+    document.getElementById("edit-btn").textContent = "Saving…";
+    document.getElementById("edit-btn").disabled = true;
+    document.getElementById("edit-cancel-btn").disabled = true;
+  } else {
+    closeEditPanel();
+  }
 
   let changed = false;
 
@@ -536,19 +570,42 @@ async function exitEditMode() {
     );
     localStorage.setItem(TIMESTAMP_KEY, new Date().toISOString());
   }
+
+  if (isSaving) {
+    document.getElementById("edit-btn").disabled = false;
+    document.getElementById("edit-cancel-btn").disabled = false;
+    closeEditPanel();
+  }
   scheduleRender();
 }
 
 function renderEditCurrent() {
   const list = document.getElementById("edit-current");
   list.innerHTML = "";
-  const sorted = [...currentBusinesses].sort((a, b) =>
+  // Pending adds show up here immediately (optimistically) so the list the
+  // user sees while editing matches what Save will actually produce — the
+  // underlying commit (the batched /api/details call + localStorage write)
+  // still only happens on Save, this is just the preview of it.
+  const pending = [...pendingAdds.values()].map((p) => ({
+    ...p,
+    isPending: true,
+  }));
+  const sorted = [...currentBusinesses, ...pending].sort((a, b) =>
     a.name.localeCompare(b.name),
   );
-  const existingCategories = new Set(currentBusinesses.map((b) => b.category));
+
+  if (sorted.length === 0) {
+    const li = document.createElement("li");
+    li.className = "edit-current-empty";
+    li.textContent = "No places saved yet.";
+    list.appendChild(li);
+    return;
+  }
+
+  const existingCategories = new Set(sorted.map((b) => b.category));
 
   for (const biz of sorted) {
-    const removed = pendingRemoves.has(biz.placeId);
+    const removed = !biz.isPending && pendingRemoves.has(biz.placeId);
 
     const categories = [
       ...new Set([...existingCategories, biz.category]),
@@ -568,20 +625,31 @@ function renderEditCurrent() {
     li.innerHTML = `
       <div class="edit-row-info">
         <div class="edit-row-name">${biz.name}</div>
+        ${biz.isPending ? `<div class="edit-row-address">Not saved yet</div>` : ""}
       </div>
       <select class="edit-category-select" data-place-id="${biz.placeId}" ${removed ? "disabled" : ""}>${options}</select>
       <input type="text" class="edit-category-new-input" placeholder="Category name" hidden>
-      <button class="edit-toggle-btn remove" data-place-id="${biz.placeId}">${removed ? "Removed" : "Remove"}</button>
+      <button class="edit-toggle-btn remove" data-place-id="${biz.placeId}" ${biz.isPending ? 'data-pending="1"' : ""}>${removed ? "Removed" : "Remove"}</button>
     `;
     list.appendChild(li);
   }
 }
 
-// Category changes for already-tracked businesses apply immediately — no
-// API call needed, so there's no reason to stage them like adds/removes.
+// Category changes for already-tracked businesses apply immediately (no API
+// call needed); changes for a pending add just update the staged entry —
+// either way there's no reason to wait for Save.
 function updateBusinessCategory(placeId, newCategory) {
+  if (!newCategory) return;
+
+  const pending = pendingAdds.get(placeId);
+  if (pending) {
+    pending.category = newCategory;
+    scheduleRender();
+    return;
+  }
+
   const biz = currentBusinesses.find((b) => b.placeId === placeId);
-  if (!biz || !newCategory) return;
+  if (!biz) return;
   biz.category = newCategory;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(currentBusinesses));
   scheduleRender();
@@ -593,7 +661,10 @@ function renderEditResults() {
   const list = document.getElementById("edit-results");
   list.innerHTML = "";
 
-  const existingCategories = new Set(currentBusinesses.map((b) => b.category));
+  const existingCategories = new Set([
+    ...currentBusinesses.map((b) => b.category),
+    ...[...pendingAdds.values()].map((p) => p.category),
+  ]);
 
   for (const r of lastSearchResults) {
     const trackedBiz = currentBusinesses.find((b) => b.placeId === r.placeId);
@@ -617,13 +688,14 @@ function renderEditResults() {
         ? "added"
         : "";
 
-    // Already-tracked rows show/edit the business's real category; new
-    // results default to Google's suggestion. Either way the current
-    // value is guaranteed to appear even if it's not already in use —
-    // that was the bug in the original <select>.
+    // Already-tracked rows show/edit the business's real category; a
+    // pending add shows/edits its staged category; new results default to
+    // Google's suggestion. Either way the current value is guaranteed to
+    // appear even if it's not already in use — that was the bug in the
+    // original <select>.
     const currentCategory = alreadyTracked
       ? trackedBiz.category
-      : r.suggestedCategory;
+      : (pendingAdds.get(r.placeId)?.category ?? r.suggestedCategory);
     const categories = [
       ...new Set([...existingCategories, currentCategory]),
     ].sort();
@@ -690,6 +762,10 @@ document.getElementById("edit-btn").addEventListener("click", () => {
   }
 });
 
+document
+  .getElementById("edit-cancel-btn")
+  .addEventListener("click", cancelEditMode);
+
 document.getElementById("edit-tabs").addEventListener("click", (e) => {
   const btn = e.target.closest(".edit-tab-btn");
   if (btn) switchEditTab(btn.dataset.tab);
@@ -715,7 +791,15 @@ function toggleRemoval(placeId) {
 document.getElementById("edit-current").addEventListener("click", (e) => {
   const btn = e.target.closest(".edit-toggle-btn");
   if (!btn) return;
-  toggleRemoval(btn.dataset.placeId);
+  const placeId = btn.dataset.placeId;
+  if (btn.dataset.pending) {
+    // Pending adds aren't staged for removal like tracked businesses are —
+    // removing one here just un-stages the add entirely.
+    pendingAdds.delete(placeId);
+    scheduleRender();
+    return;
+  }
+  toggleRemoval(placeId);
 });
 
 document.getElementById("edit-results").addEventListener("click", (e) => {
@@ -750,8 +834,7 @@ document.getElementById("edit-results").addEventListener("click", (e) => {
 });
 
 // Category editing is identical in both lists — selecting an existing
-// category commits immediately (a no-op if this row isn't a tracked
-// business yet, since updateBusinessCategory() guards on that itself);
+// category updates the tracked business or staged pending add immediately;
 // selecting "New category…" swaps the select for a plain text input.
 function handleCategorySelectChange(e) {
   const select = e.target.closest(".edit-category-select");

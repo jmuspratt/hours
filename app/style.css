@@ -13,6 +13,8 @@
   --bar-bg: #ffffff;
   --open-text: #ffffff; /* text against an --open-colored background; same in both themes */
   --link-text: #999;
+  --accent-blue: #007aff;
+  --accent-blue-text: #ffffff; /* text against an --accent-blue background; same in both themes */
 
   --title-bar-height: 45px;
 
@@ -22,6 +24,7 @@
   --font-size-12: 12px;
   --font-size-13: 13px;
   --font-size-14: 14px;
+  --font-size-15: 15px;
   --font-size-zoom-safe: 16px; /* min size to prevent iOS zoom-on-focus */
 
   /* Spacing */
@@ -55,6 +58,7 @@
     --separator: #2a2a2a;
     --bar-bg: #1a1a1a;
     --link-text: #777;
+    --accent-blue: #0a84ff;
   }
 }
 
@@ -203,6 +207,19 @@ html, body {
   display: block;
 }
 
+#edit-cancel-btn {
+  flex-shrink: 0;
+  font-family: inherit;
+  font-size: var(--font-size-12);
+  font-weight: 400;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
 #edit-btn {
   flex-shrink: 0;
   font-family: inherit;
@@ -217,7 +234,17 @@ html, body {
 }
 
 #edit-btn.active {
-  color: var(--open);
+  padding: var(--space-4) var(--space-14);
+  border-radius: 999px;
+  background: var(--accent-blue);
+  color: var(--accent-blue-text);
+  font-weight: 600;
+}
+
+#edit-btn:disabled,
+#edit-cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 /* Business list */
@@ -233,35 +260,45 @@ html, body {
   scrollbar-width: none;
   list-style: none;
   overscroll-behavior-y: contain;
+  /* Reserve space so the last row can scroll clear of the fixed
+     #version-footer sitting on top of it. */
+  padding-bottom: var(--space-28);
 }
 
 #business-list::-webkit-scrollbar {
   display: none;
 }
 
-/* Filter row is hidden (see #filter-bar.empty-state above), so the bar
-   above is shorter — match #edit-panel's offset for the same reason */
-#business-list.empty-state {
+/* Onboarding empty state — shown instead of #business-list when the
+   personal list is empty; positioned to match #business-list's own
+   offset for the same reason (filter row is hidden, see
+   #filter-bar.empty-state above) */
+#onboarding {
+  position: fixed;
   top: calc(var(--title-bar-height) + 1px + env(safe-area-inset-top));
-}
-
-/* Onboarding empty state */
-.onboarding-empty {
+  bottom: env(safe-area-inset-bottom);
+  left: 0;
+  right: 0;
   padding: var(--space-64) var(--space-32) 0;
   text-align: center;
 }
 
-.onboarding-empty p {
-  font-size: var(--font-size-13);
-  color: var(--text-muted);
+#onboarding p {
+  font-size: var(--font-size-15);
+  color: var(--text);
   margin-bottom: var(--space-16);
   line-height: 1.4;
 }
 
-.cta-btn {
+#onboarding .a2hs-hint {
+  font-size: var(--font-size-12);
+  color: var(--text-muted);
+}
+
+#onboarding .cta-btn {
   font-family: inherit;
   font-size: var(--font-size-14);
-  font-weight: 600;
+  font-weight: 400;
   padding: var(--space-10) var(--space-28);
   border-radius: 999px;
   border: none;
@@ -295,9 +332,17 @@ html, body {
 
 #edit-tabs {
   display: flex;
-  gap: var(--space-6);
   padding: var(--space-10) var(--space-16);
   border-bottom: 1px solid var(--separator);
+}
+
+#edit-tab-switcher {
+  display: flex;
+  flex: 1;
+  padding: var(--space-2);
+  border-radius: 999px;
+  background: var(--bg-alt);
+  border: 1px solid var(--filter-border);
 }
 
 .edit-tab-btn {
@@ -305,11 +350,11 @@ html, body {
   font-family: inherit;
   font-size: var(--font-size-12);
   font-weight: 500;
-  padding: var(--space-8) var(--space-12);
+  padding: var(--space-6) var(--space-12);
   border-radius: 999px;
-  border: 1px solid var(--filter-border);
-  background: var(--filter-bg);
-  color: var(--text);
+  border: none;
+  background: none;
+  color: var(--text-muted);
   cursor: pointer;
   text-align: center;
   -webkit-tap-highlight-color: transparent;
@@ -319,7 +364,6 @@ html, body {
 .edit-tab-btn.active {
   background: var(--filter-active-bg);
   color: var(--filter-active-text);
-  border-color: var(--filter-active-bg);
 }
 
 #edit-search-row {
@@ -375,6 +419,13 @@ html, body {
   gap: var(--space-8);
   padding: var(--space-10) var(--space-16);
   border-bottom: 1px solid var(--separator);
+}
+
+.edit-current-empty {
+  padding: var(--space-32) var(--space-16);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--font-size-12);
 }
 
 .edit-row-info {
@@ -590,4 +641,24 @@ html, body {
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+}
+
+/* Quiet version stamp, pinned to the bottom of the screen (not the end
+   of scrollable content) so it shows on both onboarding and the main
+   list even when there's little else on screen. Hidden while editing —
+   #edit-panel already covers the full screen at that point. */
+#version-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(env(safe-area-inset-bottom) + var(--space-14));
+  text-align: center;
+  font-size: var(--font-size-11);
+  color: var(--text-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+
+#filter-bar.editing ~ #version-footer {
+  display: none;
 }

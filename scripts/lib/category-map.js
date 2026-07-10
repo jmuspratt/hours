@@ -25,13 +25,13 @@ const TYPE_TO_CATEGORY = {
   thai_restaurant: "restaurant",
   bar: "restaurant",
   ice_cream_shop: "restaurant",
+  bagel_shop: "restaurant",
 
-  // bakery/coffee
-  cafe: "bakery/coffee",
-  coffee_shop: "bakery/coffee",
+  // coffee
+  cafe: "coffee",
+  coffee_shop: "coffee",
   bakery: "bakery/coffee",
-  bagel_shop: "bakery/coffee",
-  donut_shop: "bakery/coffee",
+  donut_shop: "coffee",
 
   // health
   pharmacy: "health",
@@ -68,15 +68,17 @@ const TYPE_TO_CATEGORY = {
   bicycle_store: "bikes",
 
   // shops (broad catch-all retail types)
-  clothing_store: "shops",
-  shoe_store: "shops",
-  jewelry_store: "shops",
-  gift_shop: "shops",
-  florist: "shops",
-  pet_store: "shops",
-  book_binder: "shops",
-  bank: "shops",
-  atm: "shops",
+  clothing_store: "shop",
+  shoe_store: "shop",
+  jewelry_store: "shop",
+  gift_shop: "shop",
+  florist: "shop",
+  pet_store: "shop",
+  book_binder: "shop",
+
+  // bank
+  bank: "bank",
+  atm: "bank",
 };
 
 const DEFAULT_CATEGORY = "shops";

@@ -18,7 +18,8 @@
       <div id="app-title">Hours</div>
       <div id="title-actions">
         <button id="clear-btn">Reset filters</button>
-        <button id="edit-btn">Settings</button>
+        <button id="edit-cancel-btn" hidden>Cancel</button>
+        <button id="edit-btn">Manage</button>
       </div>
     </div>
     <div id="filter-row">
@@ -27,23 +28,31 @@
     </div>
   </div>
   <ul id="business-list"></ul>
+  <div id="onboarding" hidden>
+    <p>Save a list of your favorite places and see what’s open when.</p>
+    <p class="a2hs-hint" hidden>iPhone users: before saving any places, save this page to your home screen via <strong<Share → Add to Home Screen</strong>. Safari and the Home Screen app keep separate lists.</p>
+    <button id="onboarding-add-btn" class="cta-btn">Add a place...</button>
+  </div>
   <div id="edit-panel" hidden>
     <div id="edit-tabs">
-      <button class="edit-tab-btn active" data-tab="current">Saved</button>
-      <button class="edit-tab-btn" data-tab="search">Add...</button>
+      <div id="edit-tab-switcher">
+        <button class="edit-tab-btn" data-tab="search">Search</button>
+        <button class="edit-tab-btn active" data-tab="current">Your places</button>
+      </div>
     </div>
     <div id="edit-tab-current" class="edit-tab-panel">
       <ul id="edit-current"></ul>
     </div>
     <div id="edit-tab-search" class="edit-tab-panel" hidden>
       <div id="edit-search-row">
-        <input id="edit-query" type="text" placeholder="Search to add...">
+        <input id="edit-query" type="text" placeholder="Joe’s Coffee">
         <input id="edit-zip" type="text" inputmode="numeric" placeholder="Zip (optional)" maxlength="10">
         <button id="edit-search-btn">Search</button>
       </div>
       <ul id="edit-results"></ul>
     </div>
   </div>
+  <div id="version-footer">Version 1.0</div>
   <script src="app.js" type="module"></script>
 </body>
 </html>
