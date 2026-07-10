@@ -502,7 +502,7 @@ html, body {
   top: 0;
   z-index: 1;
   margin-top: var(--space-20);
-  padding: var(--space-14) var(--space-16) var(--space-10);
+  padding: var(--space-10) var(--space-16);
   font-size: var(--font-size-10);
   font-weight: 600;
   letter-spacing: 0.06em;
