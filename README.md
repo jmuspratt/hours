@@ -4,6 +4,12 @@ A lightweight PWA that displays open hours for your own list of local businesses
 
 Installable on iPhone via Safari → Share → Add to Home Screen.
 
+## Screenshots
+
+| Business list                                                                                        | Filters                                                                                                     | Edit mode search                                                                         |
+| ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| ![Business list grouped by category, showing open/closed status](screenshots/hours-screenshot-1.png) | ![Filtered list with an expanded row showing hours, phone, and address](screenshots/hours-screenshot-2.png) | ![Edit mode search results with Add/Remove controls](screenshots/hours-screenshot-3.png) |
+
 ## Why this exists
 
 Looking up hours for a local business takes 15–30 seconds in a maps app: launch, search, scroll past photos and reviews, find the hours section. This app shows you hours for every business you care about in under 1 second with a single glance.
@@ -72,9 +78,7 @@ Each business — held in localStorage and returned by the API proxy — has thi
       "sat": { "open": "10:00", "close": "17:00" },
       "sun": null
     },
-    "overrides": [
-      { "date": "2026-05-25", "hours": null }
-    ]
+    "overrides": [{ "date": "2026-05-25", "hours": null }]
   },
   "lastUpdated": "2026-05-05T06:00:00Z"
 }
